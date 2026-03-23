@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 {
+    [Obsolete("This interface is deprecated. Use IContextRepository instead.")]
     public interface IModelRepository<TModel, TData>
         where TModel : BaseModel
         where TData : BaseData

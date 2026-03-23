@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 {
+    [Obsolete("This class is deprecated. Use ContextRepositoryBase with IContextRepository instead.")]
     abstract public class ModelRepositoryBase<TModel, TData> : IModelRepository<TModel, TData>
         where TModel : BaseModel
             where TData : BaseData
