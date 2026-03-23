@@ -51,7 +51,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             var expression = GetExpression<IQueryable<StudentModel>, IQueryable<LookUpsModel>>(selectorLambdaOperatorDescriptor);
 
             //act
-            var result = serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<StudentModel, Student, IQueryable<LookUpsModel>, IQueryable<LookUps>>(expression).Result.ToList();
+            var result = serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<StudentModel, Student, IQueryable<LookUpsModel>, IQueryable<LookUps>>(expression, null, null).Result.ToList();
 
             //assert
             AssertFilterStringIsCorrect(expression, "q => q.GroupBy(item => item.EnrollmentDate).OrderByDescending(group => group.Key).Select(sel => new LookUpsModel() {DateTimeValue = sel.Key, NumericValue = Convert(sel.AsQueryable().Count())})");

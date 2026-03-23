@@ -26,6 +26,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         #endregion Fields
 
         #region Methods
+        [Obsolete("Use GetAsync instead.")]
         public Task<ICollection<TModel>> GetItemsAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> queryFunc = null, ICollection<Expression<Func<IQueryable<TModel>, IIncludableQueryable<TModel, object>>>> includeProperties = null)
             where TModel : BaseModel
             where TData : BaseData
@@ -59,6 +60,18 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             return _store.CountAsync<TModel, TData>(_mapper, filter);
         }
 
+        public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null)
+            where TModel : BaseModel
+            where TData : BaseData
+        {
+            return _store.QueryAsync<TModel, TData, TModelReturn, TDataReturn>(
+                _mapper,
+                queryFunc,
+                null,
+                selectExpandDefinition);
+        }
+
+        [Obsolete("Use the QueryAsync overload without includeProperties instead.")]
         public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null,
             ICollection<Expression<Func<IQueryable<TModel>, IIncludableQueryable<TModel, object>>>> includeProperties = null)
             where TModel : BaseModel
@@ -71,6 +84,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                 selectExpandDefinition);
         }
 
+        [Obsolete("Use the QueryAsync overload without includeProperties instead.")]
         public Task<TReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn, TReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null,
             ICollection<Expression<Func<IQueryable<TModel>, IIncludableQueryable<TModel, object>>>> includeProperties = null)
             where TModel : BaseModel

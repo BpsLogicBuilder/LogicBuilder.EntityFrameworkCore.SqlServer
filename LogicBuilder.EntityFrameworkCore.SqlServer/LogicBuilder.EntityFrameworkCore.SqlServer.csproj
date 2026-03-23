@@ -7,7 +7,7 @@
     <Authors>BlaiseD</Authors>
     <Description>Given an EF Core DBContext, LogicBuilder.EntityFrameworkCore.SqlServer uses AutoMapper configurations to support CRUD operations using the DTO objects.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Supporting .NET 10.0.</PackageReleaseNotes>
+    <PackageReleaseNotes>Marking unused methods obsolete.</PackageReleaseNotes>
     <PackageTags>crud operations efcore</PackageTags>
     <Copyright>Copyright © BPS 2017</Copyright>
     <RepositoryUrl>https://github.com/BpsLogicBuilder/LogicBuilder.DataComponents</RepositoryUrl>
