@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests/LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.csproj" />
+  <Project Path="LogicBuilder.EntityFrameworkCore.SqlServer.Tests/LogicBuilder.EntityFrameworkCore.SqlServer.Tests.csproj" />
+  <Project Path="LogicBuilder.EntityFrameworkCore.SqlServer/LogicBuilder.EntityFrameworkCore.SqlServer.csproj" />
+</Solution>
