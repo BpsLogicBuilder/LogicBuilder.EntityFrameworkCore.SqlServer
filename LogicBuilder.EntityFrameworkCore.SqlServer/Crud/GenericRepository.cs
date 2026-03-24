@@ -1,7 +1,4 @@
-﻿using LogicBuilder.Data;
-using LogicBuilder.Expressions.Utils.Strutures;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
