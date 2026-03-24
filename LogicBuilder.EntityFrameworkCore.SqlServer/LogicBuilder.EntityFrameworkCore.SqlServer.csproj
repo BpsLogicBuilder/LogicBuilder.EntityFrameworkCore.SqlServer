@@ -10,7 +10,7 @@
     <PackageReleaseNotes>Marking unused methods obsolete.</PackageReleaseNotes>
     <PackageTags>crud operations efcore</PackageTags>
     <Copyright>Copyright © BPS 2017</Copyright>
-    <RepositoryUrl>https://github.com/BpsLogicBuilder/LogicBuilder.DataComponents</RepositoryUrl>
+    <RepositoryUrl>https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/BpsLogicBuilder/LogicBuilder</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
