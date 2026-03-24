@@ -1,3 +1,4 @@
+* 2026-03-24 - AB#96: Update README.
 * 2026-03-23 - AB#96: Remove default for selectExpandDefinition in QueryAsync.
 * 2026-03-23 - AB#96: Mark unused methods obsolete.
 * 2026-03-23 - AB#94: Lower code coverage threshold to 20% in CI and release.
