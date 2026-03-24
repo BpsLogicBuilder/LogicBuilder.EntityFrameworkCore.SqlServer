@@ -4,10 +4,16 @@
 		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <RootNamespace>LogicBuilder.EntityFrameworkCore.SqlServer</RootNamespace>
     <PackageId>LogicBuilder.EntityFrameworkCore.SqlServer</PackageId>
-    <Authors>BlaiseD</Authors>
+		<Authors>BlaiseD</Authors>
+		<LangVersion>latest</LangVersion>
+		<WarningsAsErrors>true</WarningsAsErrors>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Description>Given an EF Core DBContext, LogicBuilder.EntityFrameworkCore.SqlServer uses AutoMapper configurations to support CRUD operations using the DTO objects.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Marking unused methods obsolete.</PackageReleaseNotes>
+    <PackageReleaseNotes>Including symbols package with NuGet deployment.</PackageReleaseNotes>
     <PackageTags>crud operations efcore</PackageTags>
     <Copyright>Copyright © BPS 2017</Copyright>
     <RepositoryUrl>https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer</RepositoryUrl>
