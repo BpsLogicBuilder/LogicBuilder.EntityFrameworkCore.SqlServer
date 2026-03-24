@@ -1,7 +1,4 @@
-﻿using LogicBuilder.Data;
-using LogicBuilder.Expressions.Utils.Strutures;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +27,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
 
         #region Methods
         public virtual async Task<ICollection<T>> GetAsync(Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IQueryable<T>> queryableFunc = null,
-            ICollection<Func<IQueryable<T>, IIncludableQueryable<T, object>>> includeProperties = null)
+            Func<IQueryable<T>, IQueryable<T>> queryableFunc = null)
         {
             IQueryable<T> query = this.dbSet;
 
             if (filter != null)
                 query = query.Where(filter);
-
-            if (includeProperties != null)
-                query = includeProperties.Aggregate(query, (list, next) => query = next(query));
 
             return queryableFunc != null ? await queryableFunc(query).ToListAsync() : await query.ToListAsync();
         }
@@ -55,12 +48,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             return Task.FromResult(queryableFunc != null ? queryableFunc(query) : query);
         }
 
-        public virtual Task<TReturn> QueryAsync<TReturn>(Func<IQueryable<T>, TReturn> queryableFunc, ICollection<Func<IQueryable<T>, IIncludableQueryable<T, object>>> includeProperties = null)
+        public virtual Task<TReturn> QueryAsync<TReturn>(Func<IQueryable<T>, TReturn> queryableFunc)
         {
             IQueryable<T> query = this.dbSet;
-
-            if (includeProperties != null)
-                query = includeProperties.Aggregate(query, (list, next) => query = next(query));
 
             return Task.FromResult(queryableFunc(query));
         }

@@ -1,3 +1,6 @@
+* 2026-03-24 - AB#96: Remove unused using directive from StoreBase.cs
+* 2026-03-24 - AB#96: Update using directives in GenericRepository.cs
+* 2026-03-24 - AB#96: Remove obsolete methods.
 * 2026-03-24 - AB#96: Include symbols package with NuGet deployment.
 * 2026-03-24 - AB#96: Update Repository URL to correct project repository.
 * 2026-03-24 - AB#96: Fix DB name typo and update repository call to async/await.

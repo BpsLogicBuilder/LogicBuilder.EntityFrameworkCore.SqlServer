@@ -1,6 +1,5 @@
 ﻿using LogicBuilder.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +20,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
         #endregion Fields
 
         #region Methods
-        public async Task<ICollection<T>> GetAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryFunc = null, ICollection<Func<IQueryable<T>, IIncludableQueryable<T, object>>> includeProperties = null) where T : BaseData
+        public async Task<ICollection<T>> GetAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryFunc = null) where T : BaseData
         {
             return await _unitOfWork.GetRepository<T>().GetAsync
             (
                 filter,
-                queryFunc,
-                includeProperties
+                queryFunc
             );
         }
 
@@ -45,9 +43,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
             return await _unitOfWork.GetRepository<T>().CountAsync(filter);
         }
 
-        public async Task<TReturn> QueryAsync<T, TReturn>(Func<IQueryable<T>, TReturn> queryableFunc, ICollection<Func<IQueryable<T>, IIncludableQueryable<T, object>>> includeProperties = null) where T : BaseData
+        public async Task<TReturn> QueryAsync<T, TReturn>(Func<IQueryable<T>, TReturn> queryableFunc) where T : BaseData
         {
-            return await _unitOfWork.GetRepository<T>().QueryAsync(queryableFunc, includeProperties);
+            return await _unitOfWork.GetRepository<T>().QueryAsync(queryableFunc);
         }
 
         public async Task<bool> SaveAsync<T>(ICollection<T> entities) where T : BaseData
