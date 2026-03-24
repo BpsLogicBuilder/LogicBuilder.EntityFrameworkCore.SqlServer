@@ -64,7 +64,7 @@ dotnet add package LogicBuilder.EntityFrameworkCore.SqlServer
                 (
                     options =>
                     {
-                        options.UseInMemoryDatabase("ContosoUniVersity");
+                        options.UseInMemoryDatabase("ContosoUniversity");
                         options.UseInternalServiceProvider(new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider());
                     }
                 )
@@ -74,9 +74,9 @@ dotnet add package LogicBuilder.EntityFrameworkCore.SqlServer
                 .AddTransient<IMapper>(sp => new Mapper(sp.GetRequiredService<AutoMapper.IConfigurationProvider>(), sp.GetService))
                 .BuildServiceProvider();
 
-    //Call the repository
+    //Call the repository (inside an async method)
     ISchoolRepository repository = serviceProvider.GetRequiredService<ISchoolRepository>();
-    ICollection<StudentModel> list = Task.Run(() => repository.GetAsync<StudentModel, Student>()).Result;
+    ICollection<StudentModel> list = await repository.GetAsync<StudentModel, Student>();
 ```
 
 
