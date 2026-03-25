@@ -1,3 +1,4 @@
+* 2026-03-25 - AB#97: Add custom NuGet source and auth to .NET setup in CI.
 * 2026-03-25 - AB#97: Refactor generics to use interfaces instead of dedicated base classes.
 * 2026-03-25 - AB#97: All tests working with updated Logic Builder libraries.
 * 2026-03-24 - AB#96: Remove unused using directive from StoreBase.cs
