@@ -13,7 +13,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 {
     abstract public class ContextRepositoryBase : IContextRepository
     {
-        public ContextRepositoryBase(IStore store, IMapper mapper)
+        protected ContextRepositoryBase(IStore store, IMapper mapper)
         {
             this._store = store;
             this._mapper = mapper;
@@ -26,8 +26,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 
         #region Methods
         public Task<ICollection<TModel>> GetAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> queryFunc = null, SelectExpandDefinition selectExpandDefinition = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : class, IBaseModel
+            where TData : class, IBaseData
         {
             return _store.GetAsync<TModel, TData>
             (
@@ -39,15 +39,15 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         public Task<int> CountAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             return _store.CountAsync<TModel, TData>(_mapper, filter);
         }
 
         public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             return _store.QueryAsync<TModel, TData, TModelReturn, TDataReturn>(
                 _mapper,
@@ -56,64 +56,64 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         public Task<bool> SaveAsync<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            return _store.SaveAsync<TModel, TData>(_mapper, new List<TModel> { entity });
+            return _store.SaveAsync<TModel, TData>(_mapper, [entity]);
         }
 
         public Task<bool> SaveAsync<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             return _store.SaveAsync<TModel, TData>(_mapper, entities);
         }
 
         public Task<bool> SaveGraphAsync<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            return _store.SaveGraphsAsync<TModel, TData>(_mapper, new List<TModel> { entity });
+            return _store.SaveGraphsAsync<TModel, TData>(_mapper, [entity]);
         }
 
         public Task<bool> SaveGraphsAsync<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             return _store.SaveGraphsAsync<TModel, TData>(_mapper, entities);
         }
 
         public Task<bool> DeleteAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             return _store.DeleteAsync<TModel, TData>(_mapper, filter);
         }
 
         public void AddChange<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            _store.AddChanges<TModel, TData>(_mapper, new List<TModel> { entity });
+            _store.AddChanges<TModel, TData>(_mapper, [entity]);
         }
 
         public void AddChanges<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             _store.AddChanges<TModel, TData>(_mapper, entities);
         }
 
         public void AddGraphChange<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            _store.AddGraphChanges<TModel, TData>(_mapper, new List<TModel> { entity });
+            _store.AddGraphChanges<TModel, TData>(_mapper, [entity]);
         }
 
         public void AddGraphChanges<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             _store.AddGraphChanges<TModel, TData>(_mapper, entities);
         }

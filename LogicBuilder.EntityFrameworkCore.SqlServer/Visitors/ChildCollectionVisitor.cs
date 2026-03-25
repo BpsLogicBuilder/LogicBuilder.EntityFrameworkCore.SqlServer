@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using LogicBuilder.Expressions.Utils;
+﻿using LogicBuilder.Expressions.Utils;
 using LogicBuilder.Expressions.Utils.Expansions;
 using System;
 using System.Collections.Generic;
@@ -10,19 +9,17 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
 {
     internal abstract class ChildCollectionVisitor : ExpressionVisitor
     {
-        public ChildCollectionVisitor(List<ExpansionOptions> expansions, IMapper mapper)
+        protected ChildCollectionVisitor(List<ExpansionOptions> expansions)
         {
             this.expansions = expansions;
-            this.mapper = mapper;
         }
 
         protected readonly List<ExpansionOptions> expansions;
-        protected readonly IMapper mapper;
-        private readonly List<Expression> foundExpansions = new List<Expression>();
+        private readonly List<Expression> foundExpansions = [];
 
         protected override Expression VisitMemberInit(MemberInitExpression node)
         {
-            ExpansionOptions expansion = expansions.First();
+            ExpansionOptions expansion = expansions[0];
 
             if (node.NewExpression.Type != expansion.ParentType)
                 return base.VisitMemberInit(node);

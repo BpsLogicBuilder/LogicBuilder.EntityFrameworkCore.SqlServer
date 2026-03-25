@@ -1,27 +1,16 @@
-﻿using AutoMapper;
-using LogicBuilder.Expressions.Utils;
+﻿using LogicBuilder.Expressions.Utils;
 using LogicBuilder.Expressions.Utils.Expansions;
-using LogicBuilder.Expressions.Utils.ExpressionBuilder.Lambda;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
 {
-    internal class FilterAppender : ExpressionVisitor
+    internal class FilterAppender(Expression expression, ExpansionOptions expansion) : ExpressionVisitor
     {
-        public FilterAppender(Expression expression, ExpansionOptions expansion, IMapper mapper)
-        {
-            this.expansion = expansion;
-            this.expression = expression;
-            this.mapper = mapper;
-        }
+        private readonly ExpansionOptions expansion = expansion;
+        private readonly Expression expression = expression;
 
-        private readonly ExpansionOptions expansion;
-        private readonly Expression expression;
-        private readonly IMapper mapper;
-
-        public static Expression AppendFilter(Expression expression, ExpansionOptions expansion, IMapper mapper)
-            => new FilterAppender(expression, expansion, mapper).Visit(expression);
+        public static Expression AppendFilter(Expression expression, ExpansionOptions expansion)
+            => new FilterAppender(expression, expansion).Visit(expression);
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {

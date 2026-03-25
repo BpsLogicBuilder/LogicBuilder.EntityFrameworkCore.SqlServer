@@ -74,12 +74,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             this.dbSet.Add(t);
         }
 
-        //private static void Dump(List<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<BaseData>> entries)
-        //{
-        //    foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<BaseData> entry in entries)
-        //        System.Diagnostics.Debug.WriteLine("Type: {0}, State: {1}.", entry.Entity.GetType().Name, entry.State.ToString());
-        //}
-
         /// <summary>
         /// Inserts only the root object - even if there are child objects attached.
         /// </summary>
@@ -101,7 +95,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
         }
 
         /// <summary>
-        /// Updates the entire graph.  BaseData.EntityState on the root entity must be set to Deleted.
+        /// Updates the entire graph.  IBaseData.EntityState on the root entity must be set to Deleted.
         /// </summary>
         /// <param name="t"></param>
         public virtual void DeleteGraph(T t)
@@ -124,8 +118,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
 
 
         /// <summary>
-        /// Updates the entire graph.  BaseData.EntityState on the root entity must be set to Modified.
-        /// BaseData.EntityState on each object remaining determines the action Insert/Modify/Delete
+        /// Updates the entire graph.  IBaseData.EntityState on the root entity must be set to Modified.
+        /// IBaseData.EntityState on each object remaining determines the action Insert/Modify/Delete
         /// </summary>
         /// <param name="t"></param>
         public virtual void UpdateGraph(T t)

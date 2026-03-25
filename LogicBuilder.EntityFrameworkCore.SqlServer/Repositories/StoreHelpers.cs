@@ -21,10 +21,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             Expression<Func<TModel, bool>> filter = null,
             Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> queryFunc = null,
             SelectExpandDefinition selectExpandDefinition = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : class, IBaseModel
+            where TData : class, IBaseData
         {
-            return mapper.ProjectTo
+            return [.. mapper.ProjectTo
             (
                 await store.GetQueryableAsync
                 (
@@ -34,8 +34,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                 null,
                 GetIncludes<TModel>(selectExpandDefinition)
             )
-            .UpdateQueryable(selectExpandDefinition.GetExpansions(typeof(TModel)), mapper)
-            .ToList();
+            .UpdateQueryable(selectExpandDefinition.GetExpansions(typeof(TModel)))];
 
             Func<IQueryable<TData>, IQueryable<TData>> GetQueryFunc()
                 => mapper.MapExpression<Expression<Func<IQueryable<TData>, IQueryable<TData>>>>(queryFunc)?.Compile();
@@ -45,13 +44,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         private static Expression<Func<TModel, object>>[] GetIncludes<TModel>(SelectExpandDefinition selectExpandDefinition) where TModel : class
-                => selectExpandDefinition.GetExpansionSelectors<TModel>().ToArray() ?? Array.Empty<Expression<Func<TModel, object>>>();
+                => selectExpandDefinition.GetExpansionSelectors<TModel>().ToArray() ?? [];
 
         internal static async Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(this IStore store, IMapper mapper,
             Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc = null,
             SelectExpandDefinition selectExpandDefinition = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             //Map the expressions
             Expression<Func<IQueryable<TData>, TDataReturn>> mappedQueryFunc = mapper.MapExpression<Expression<Func<IQueryable<TData>, TDataReturn>>>(queryFunc);
@@ -74,101 +73,105 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                     elementType,
                     selectExpandDefinition
                 )
-                .UpdateQueryable(elementType, selectExpandDefinition.GetExpansions(elementType), mapper);
+                .UpdateQueryable(elementType, selectExpandDefinition.GetExpansions(elementType));
         }
 
         public static IQueryable ProjectTo(this IMapper mapper, IQueryable source, Type destType, SelectExpandDefinition selectExpandDefinition = null)
             => (IQueryable)nameof(ProjectTo).GetGenericMethodInfo().MakeGenericMethod
             (
                 destType
-            ).Invoke(null, new object[] { mapper, source, selectExpandDefinition });
+            ).Invoke(null, [mapper, source, selectExpandDefinition]);
 
         private static IQueryable<TDest> ProjectTo<TDest>(IMapper mapper, IQueryable source, SelectExpandDefinition selectExpandDefinition = null) where TDest : class
             => mapper.ProjectTo<TDest>(source, null, GetIncludes<TDest>(selectExpandDefinition));
 
         private static MethodInfo GetGenericMethodInfo(this string methodName)
-           => typeof(StoreHelpers).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).Single(m => m.Name == methodName && m.IsGenericMethod);
+           => typeof(StoreHelpers).GetMethods
+            (
+               BindingFlags.NonPublic// NOSONAR accessing a genric method via reflection is necessary in this case
+               | BindingFlags.Static
+            ).Single(m => m.Name == methodName && m.IsGenericMethod);
 
         internal static Task<int> CountAsync<TModel, TData>(this IStore store, IMapper mapper, Expression<Func<TModel, bool>> filter = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             Expression<Func<TData, bool>> f = mapper.MapExpression<Expression<Func<TData, bool>>>(filter);
             return store.CountAsync(f);
         }
 
         internal static async Task<bool> SaveGraphsAsync<TModel, TData>(this IStore store, IMapper mapper, ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            IList<TData> items = mapper.Map<IEnumerable<TData>>(entities).ToList();
+            List<TData> items = [.. mapper.Map<IEnumerable<TData>>(entities)];
             bool success = await store.SaveGraphsAsync<TData>(items);
 
-            IList<TModel> entityList = entities.ToList();
+            List<TModel> entityList = [.. entities];
             for (int i = 0; i < items.Count; i++)
-                mapper.Map<TData, TModel>(items[i], entityList[i]);
+                mapper.Map(items[i], entityList[i]);
 
             return success;
         }
 
         internal static async Task<bool> SaveAsync<TModel, TData>(this IStore store, IMapper mapper, ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            IList<TData> items = mapper.Map<IEnumerable<TData>>(entities).ToList();
-            bool success = await store.SaveAsync<TData>(items);
+            List<TData> items = [.. mapper.Map<IEnumerable<TData>>(entities)];
+            bool success = await store.SaveAsync(items);
 
-            IList<TModel> entityList = entities.ToList();
+            List<TModel> entityList = [.. entities];
             for (int i = 0; i < items.Count; i++)
-                mapper.Map<TData, TModel>(items[i], entityList[i]);
+                mapper.Map(items[i], entityList[i]);
 
             return success;
         }
 
         internal static async Task<bool> DeleteAsync<TModel, TData>(this IStore store, IMapper mapper, Expression<Func<TModel, bool>> filter = null)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
             Expression<Func<TData, bool>> f = mapper.MapExpression<Expression<Func<TData, bool>>>(filter);
-            List<TData> list = (await store.GetAsync(f)).ToList();
+            List<TData> list = [.. (await store.GetAsync(f))];
             list.ForEach(item => { item.EntityState = Data.EntityStateType.Deleted; });
             return await store.SaveAsync<TData>(list);
         }
 
         internal static void AddChanges<TModel, TData>(this IStore store, IMapper mapper, ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            store.AddChanges<TData>(mapper.Map<IEnumerable<TData>>(entities).ToList());
+            store.AddChanges([.. mapper.Map<IEnumerable<TData>>(entities)]);
         }
 
         internal static void AddGraphChanges<TModel, TData>(this IStore store, IMapper mapper, ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData
+            where TModel : IBaseModel
+            where TData : class, IBaseData
         {
-            store.AddGraphChanges<TData>(mapper.Map<IEnumerable<TData>>(entities).ToList());
+            store.AddGraphChanges([.. mapper.Map<IEnumerable<TData>>(entities)]);
         }
 
-        internal static IQueryable UpdateQueryable(this IQueryable query, Type modelType, List<List<ExpansionOptions>> expansions, IMapper mapper) 
+        internal static IQueryable UpdateQueryable(this IQueryable query, Type modelType, List<List<ExpansionOptions>> expansions) 
             => (IQueryable)nameof(UpdateQueryable).GetGenericMethodInfo().MakeGenericMethod
             (
                 modelType
-            ).Invoke(null, new object[] { query, expansions, mapper });
+            ).Invoke(null, [query, expansions]);
 
-        internal static IQueryable<TModel> UpdateQueryable<TModel>(this IQueryable<TModel> query, List<List<ExpansionOptions>> expansions, IMapper mapper)
+        internal static IQueryable<TModel> UpdateQueryable<TModel>(this IQueryable<TModel> query, List<List<ExpansionOptions>> expansions)
         {
-            List<List<ExpansionOptions>> filters = GetFilters();
-            List<List<ExpansionOptions>> methods = GetQueryMethods();
+            List<List<ExpansionOptions>> filters = GetFilters(expansions);
+            List<List<ExpansionOptions>> methods = GetQueryMethods(expansions);
 
-            if (!filters.Any() && !methods.Any())
+            if (filters.Count == 0 && methods.Count == 0)
                 return query;
 
             Expression expression = query.Expression;
 
-            if (methods.Any())
+            if (methods.Count != 0)
                 expression = UpdateProjectionMethodExpression(expression);
 
-            if (filters.Any())//do filter last so it runs before a Skip or Take call.
+            if (filters.Count != 0)//do filter last so it runs before a Skip or Take call.
                 expression = UpdateProjectionFilterExpression(expression);
 
             return query.Provider.CreateQuery<TModel>(expression);
@@ -180,8 +183,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                     filterList => projectionExpression = FilterUpdater.UpdaterExpansion
                     (
                         projectionExpression,
-                        filterList,
-                        mapper
+                        filterList
                     )
                 );
 
@@ -195,22 +197,22 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                     methodList => projectionExpression = QueryFunctionUpdater.UpdaterExpansion
                     (
                         projectionExpression,
-                        methodList,
-                        mapper
+                        methodList
                     )
                 );
 
                 return projectionExpression;
             }
 
-            List<List<ExpansionOptions>> GetFilters()
+            static List<List<ExpansionOptions>> GetFilters(List<List<ExpansionOptions>> expansions)
                 => expansions.Aggregate(new List<List<ExpansionOptions>>(), (listOfLists, nextList) =>
                 {
-                    var filterNextList = nextList.Aggregate(new List<ExpansionOptions>(), (list, next) =>
+                    var filterNextList = new List<ExpansionOptions>();
+                    foreach (ExpansionOptions next in nextList)
                     {
                         if (next.FilterOption?.FilterLambdaOperator != null)
                         {
-                            list = list.ConvertAll
+                            filterNextList = filterNextList.ConvertAll
                             (
                                 exp => new ExpansionOptions
                                 (
@@ -221,7 +223,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                                 )
                             );//new list removing filter
 
-                            list.Add
+                            filterNextList.Add
                             (
                                 new ExpansionOptions
                                 (
@@ -234,28 +236,29 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                                 )
                             );//add expansion with filter
 
-                            listOfLists.Add(list.ToList()); //Add the whole list to the list of filter lists
-                                                            //Only the last item in each list has a filter
-                                                            //Filters for parent expansions exist in their own lists
-                            return list;
+                            listOfLists.Add([.. filterNextList]); //Add the whole list to the list of filter lists
+                                                                      //Only the last item in each list has a filter
+                                                                      //Filters for parent expansions exist in their own lists
+                            continue;
                         }
 
-                        list.Add(next);
+                        filterNextList.Add(next);
 
-                        return list;
-                    });
+                    }
 
                     return listOfLists;
                 });
 
-            List<List<ExpansionOptions>> GetQueryMethods()
+            static List<List<ExpansionOptions>> GetQueryMethods(List<List<ExpansionOptions>> expansions)
                 => expansions.Aggregate(new List<List<ExpansionOptions>>(), (listOfLists, nextList) =>
                 {
-                    var filterNextList = nextList.Aggregate(new List<ExpansionOptions>(), (list, next) =>
+                    var queryMethodNextList = new List<ExpansionOptions>();
+
+                    foreach (ExpansionOptions next in nextList)
                     {
                         if (next.QueryOption?.SortCollection != null)
                         {
-                            list = list.ConvertAll
+                            queryMethodNextList = queryMethodNextList.ConvertAll
                             (
                                 exp => new ExpansionOptions
                                 (
@@ -266,7 +269,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                                 )
                             );//new list removing query options
 
-                            list.Add
+                            queryMethodNextList.Add
                             (
                                 new ExpansionOptions
                                 (
@@ -278,16 +281,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                                 )
                             );//add expansion with query options
 
-                            listOfLists.Add(list.ToList()); //Add the whole list to the list of query method lists
-                                                            //Only the last item in each list has a query method
-                                                            //Query methods for parent expansions exist in their own lists
-                            return list;
+                            listOfLists.Add([.. queryMethodNextList]); //Add the whole list to the list of query method lists
+                                                                           //Only the last item in each list has a query method
+                                                                           //Query methods for parent expansions exist in their own lists
+                            continue;
                         }
 
-                        list.Add(next);
-
-                        return list;
-                    });
+                        queryMethodNextList.Add(next);
+                    }
 
                     return listOfLists;
                 });
