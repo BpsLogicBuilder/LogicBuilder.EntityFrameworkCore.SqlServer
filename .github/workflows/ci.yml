@@ -33,9 +33,6 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Explicitly add nuget.org source
-        run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nugetorg
-
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
