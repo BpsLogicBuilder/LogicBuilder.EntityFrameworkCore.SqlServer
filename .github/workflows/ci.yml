@@ -29,10 +29,12 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: https://nuget.pkg.github.com/bpsLogicBuilder/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add GitHub Packages source
-        run: |
-          dotnet nuget add source https://nuget.pkg.github.com/bpsLogicBuilder/index.json -n GitHub -u ${{ github.actor }} -p ${{ secrets.NUGET_TOKEN }}
+      - name: Explicitly add nuget.org source
+        run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org --priority 1
 
       - name: Cache dependencies
         uses: actions/cache@v4
