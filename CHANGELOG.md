@@ -1,3 +1,4 @@
+* 2026-03-25 - AB#97: Removing GitHub packages from nuget.config.
 * 2026-03-25 - AB#97: Adding nuget.config to solve package source issues.
 * 2026-03-25 - AB#97: Update EF Core and AutoMapper dependencies.
 * 2026-03-25 - AB#97: Remove NuGet.org package source configuration.
