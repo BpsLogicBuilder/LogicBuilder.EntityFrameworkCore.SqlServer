@@ -64,77 +64,60 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 
         #region Helpers
         private static SelectDescriptor GetAboutBody()
-            => new()
-            {
-                SourceOperand = new OrderByDescriptor
-                {
-                    SourceOperand = new GroupByDescriptor
-                    {
-                        SourceOperand = new ParameterDescriptor
-                        {
-                            ParameterName = "q"
-                        },
-                        SelectorBody = new MemberSelectorDescriptor
-                        {
-                            MemberFullName = "EnrollmentDate",
-                            SourceOperand = new ParameterDescriptor
-                            {
-                                ParameterName = "item"
-                            }
-                        },
-                        SelectorParameterName = "item"
-                    },
-                    SortDirection = LogicBuilder.Expressions.Utils.Strutures.ListSortDirection.Descending,
-                    SelectorBody = new MemberSelectorDescriptor
-                    {
-                        MemberFullName = "Key",
-                        SourceOperand = new ParameterDescriptor
-                        {
-                            ParameterName = "group"
-                        }
-                    },
-                    SelectorParameterName = "group"
-                },
-                SelectorBody = new MemberInitDescriptor
-                {
-                    MemberBindings = new Dictionary<string, IExpressionDescriptor>
+            => new
+            (
+                new OrderByDescriptor
+                (
+                    new GroupByDescriptor
+                    (
+                        new ParameterDescriptor("q"),
+                        new MemberSelectorDescriptor
+                        (
+                            "EnrollmentDate",
+                            new ParameterDescriptor("item")
+                        ),
+                        "item"
+                    ),
+                    new MemberSelectorDescriptor
+                    (
+                        "Key",
+                        new ParameterDescriptor("group")
+                    ),
+                    LogicBuilder.Expressions.Utils.Strutures.ListSortDirection.Descending,
+                    "group"
+                ),
+                new MemberInitDescriptor
+                (
+                    new Dictionary<string, DescriptorBase>
                     {
                         ["DateTimeValue"] = new MemberSelectorDescriptor
-                        {
-                            MemberFullName = "Key",
-                            SourceOperand = new ParameterDescriptor
-                            {
-                                ParameterName = "sel"
-                            }
-                        },
+                        (
+                            "Key",
+                            new ParameterDescriptor("sel")
+                        ),
                         ["NumericValue"] = new ConvertDescriptor
-                        {
-                            SourceOperand = new CountDescriptor
-                            {
-                                SourceOperand = new AsQueryableDescriptor()
-                                {
-                                    SourceOperand = new ParameterDescriptor
-                                    {
-                                        ParameterName = "sel"
-                                    }
-                                }
-                            },
-                            Type = typeof(double?)
-                        }
-                    },
-                    NewType = typeof(LookUpsModel)
-                },
-                SelectorParameterName = "sel"
-            };
+                        (
+                            new CountDescriptor
+                            (
+                                new AsQueryableDescriptor(new ParameterDescriptor("sel"))
 
-        private static SelectorLambdaDescriptor GetExpressionDescriptor<T, TResult>(IExpressionDescriptor selectorBody, string parameterName = "$it")
-            => new()
-            {
-                Selector = selectorBody,
-                SourceElementType = typeof(T),
-                ParameterName = parameterName,
-                BodyType = typeof(TResult)
-            };
+                            ),
+                            typeof(double?).AssemblyQualifiedName
+                        )
+                    },
+                    typeof(LookUpsModel).AssemblyQualifiedName
+                ),
+                "sel"
+            );
+
+        private static SelectorLambdaDescriptor GetExpressionDescriptor<T, TResult>(DescriptorBase selectorBody, string parameterName = "$it")
+            => new
+            (
+                selectorBody,
+                typeof(T).AssemblyQualifiedName,
+                parameterName,
+                typeof(TResult).AssemblyQualifiedName
+            );
 
         private Expression<Func<T, TResult>> GetExpression<T, TResult>(SelectorLambdaDescriptor selectorLambdaDescriptor)
         {

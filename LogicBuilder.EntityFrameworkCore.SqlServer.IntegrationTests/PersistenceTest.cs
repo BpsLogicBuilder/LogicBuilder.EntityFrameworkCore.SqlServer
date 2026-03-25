@@ -36,17 +36,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             (
                 s => s.Name == "Mathematics",
                 selectExpandDefinition: new LogicBuilder.Expressions.Utils.Expansions.SelectExpandDefinition
-                {
-                    ExpandedItems = new List<LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem>
-                    {//Need expansion because RowVersion is not a literal type (included without explicit expansion)
+                (
+                    [],
+                    [//Need expansion because RowVersion is not a literal type (included without explicit expansion)
                      //Or use GetItemsAsync which does not use projection.
                      //Todo include check for typeof(byte[]) in LogicBuilder.Expressions.Utils.TypeExtension.GetValueTypeMembers()
-                        new LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem
-                        {
-                            MemberName = "RowVersion"
-                        }
-                    }
-                }
+                        new("RowVersion")
+                    ]
+                )
             ).Result.Single();
             department.Budget = 1000.1m;
             department.EntityState = LogicBuilder.Domain.EntityStateType.Modified;
@@ -133,12 +130,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
                 s => s.FullName == "Candace Kapoor",
                 null,
                 new LogicBuilder.Expressions.Utils.Expansions.SelectExpandDefinition
-                {
-                    ExpandedItems = new List<LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem>
-                    {
-                        new LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem { MemberName = nameof(InstructorModel.OfficeAssignment) }
-                    }
-                }
+                (
+                    [],
+                    [
+                        new LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem(nameof(InstructorModel.OfficeAssignment))
+                    ]
+                )
             )).First();
 
             int id = instructor.ID;
@@ -151,13 +148,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             (
                 f => f.ID == id,
                 null,
-                new LogicBuilder.Expressions.Utils.Expansions.SelectExpandDefinition
-                {
-                    ExpandedItems = new List<LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem>
-                    {
-                        new LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem { MemberName = nameof(InstructorModel.OfficeAssignment) }
-                    }
-                }
+                new Expressions.Utils.Expansions.SelectExpandDefinition
+                (
+                    [],
+                    [
+                        new Expressions.Utils.Expansions.SelectExpandItem(nameof(InstructorModel.OfficeAssignment))
+                    ]
+                )
             )).First();
 
             Assert.Equal("Location1", instructor2.OfficeAssignment.Location);
@@ -170,13 +167,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             (
                 f => f.ID == id,
                 null,
-                new LogicBuilder.Expressions.Utils.Expansions.SelectExpandDefinition
-                {
-                    ExpandedItems = new List<LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem>
-                    {
-                        new LogicBuilder.Expressions.Utils.Expansions.SelectExpandItem { MemberName = nameof(InstructorModel.OfficeAssignment) }
-                    }
-                }
+                new Expressions.Utils.Expansions.SelectExpandDefinition
+                (
+                    [],
+                    [
+                        new Expressions.Utils.Expansions.SelectExpandItem(nameof(InstructorModel.OfficeAssignment))
+                    ]
+                )
             )).First();
 
             Assert.Null(instructor.OfficeAssignment);

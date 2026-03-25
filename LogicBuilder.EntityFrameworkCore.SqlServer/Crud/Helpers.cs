@@ -21,38 +21,33 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
     {
         public static void ApplyStateChanges(this DbContext context)
         {
-            foreach (EntityEntry<BaseData> entry in context.ChangeTracker.Entries<BaseData>())
+            foreach (EntityEntry<IBaseData> entry in context.ChangeTracker.Entries<IBaseData>())
                 entry.State = entry.ConvertState();
         }
 
         public static void SetStates(this DbContext context, EntityState state)
         {
-            foreach (EntityEntry<BaseData> entry in context.ChangeTracker.Entries<BaseData>())
+            foreach (EntityEntry<IBaseData> entry in context.ChangeTracker.Entries<IBaseData>())
                 entry.State = state;
         }
 
-        public static EntityState ConvertState(this EntityEntry<BaseData> entry)
+        public static EntityState ConvertState(this EntityEntry<IBaseData> entry)
         {
-            BaseData poco = entry.Entity;
-            switch (poco.EntityState)
+            IBaseData poco = entry.Entity;
+            return poco.EntityState switch
             {
-                case EntityStateType.Added:
-                    return EntityState.Added;
-                case EntityStateType.Modified:
-                    return EntityState.Modified;
-                case EntityStateType.Deleted:
-                    return EntityState.Deleted;
-                case EntityStateType.Unchanged:
-                    return EntityState.Unchanged;
-                default:
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.unKnownEntityStateFormat, Enum.GetName(typeof(EntityStateType), poco.EntityState)));
-            }
+                EntityStateType.Added => EntityState.Added,
+                EntityStateType.Modified => EntityState.Modified,
+                EntityStateType.Deleted => EntityState.Deleted,
+                EntityStateType.Unchanged => EntityState.Unchanged,
+                _ => throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.unKnownEntityStateFormat, Enum.GetName(poco.EntityState))),
+            };
         }
 
         public static void DetachMatchingKeyEntries(this DbContext context, object sourceEntity)
         {
-            List<BaseData> entities = new List<BaseData>();
-            GetEntityList((BaseData)sourceEntity, entities);
+            List<IBaseData> entities = [];
+            GetEntityList((IBaseData)sourceEntity, entities);
 
             entities.ForEach
             (
@@ -83,7 +78,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             );
         }
 
-        private static void GetEntityList(System.Collections.IEnumerable source, List<BaseData> entities)
+        private static void GetEntityList(System.Collections.IEnumerable source, List<IBaseData> entities)
         {
             System.Collections.IEnumerator enumerator = source.GetEnumerator();
             while (true)
@@ -94,7 +89,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             }
         }
 
-        private static void GetEntityList(BaseData entity, List<BaseData> entities)
+        private static void GetEntityList(IBaseData entity, List<IBaseData> entities)
         {
             entities.Add(entity);
 
@@ -102,15 +97,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                 GetEntityList(pInfo.GetValue(entity, null), pInfo.PropertyType, entities);
         }
 
-        private static void GetEntityList(object entity, Type entityType, List<BaseData> entities)
+        private static void GetEntityList(object entity, Type entityType, List<IBaseData> entities)
         {
-            if (entity == null)
+            if (entity == null || entityType.IsLiteralType())
                 return;
 
-            if (entityType.IsLiteralType())
-                return;
-            else if (typeof(BaseData).IsAssignableFrom(entityType))
-                GetEntityList((BaseData)entity, entities);
+            if (typeof(IBaseData).IsAssignableFrom(entityType))
+                GetEntityList((IBaseData)entity, entities);
             else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(entityType))
                 GetEntityList((System.Collections.IEnumerable)entity, entities);
         }

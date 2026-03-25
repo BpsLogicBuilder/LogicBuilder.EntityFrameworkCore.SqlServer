@@ -12,52 +12,52 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
     public interface IContextRepository
     {
         Task<ICollection<TModel>> GetAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> queryFunc = null, SelectExpandDefinition selectExpandDefinition = null)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : class, IBaseModel
+            where TData : class, IBaseData;
 
         Task<int> CountAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<bool> SaveAsync<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<bool> SaveAsync<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<bool> SaveGraphAsync<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<bool> SaveGraphsAsync<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<bool> DeleteAsync<TModel, TData>(System.Linq.Expressions.Expression<Func<TModel, bool>> filter = null)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         void AddChange<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         void AddChanges<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         void AddGraphChange<TModel, TData>(TModel entity)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         void AddGraphChanges<TModel, TData>(ICollection<TModel> entities)
-            where TModel : BaseModel
-            where TData : BaseData;
+            where TModel : IBaseModel
+            where TData : class, IBaseData;
 
         Task<bool> SaveChangesAsync();
 

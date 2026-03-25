@@ -3,15 +3,10 @@ using System.Collections.Generic;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DbMappers
 {
-    internal class DbMapperBase<T> : IDbMapper<T> where T : BaseData
+    internal class DbMapperBase<T>(IUnitOfWork unitOfWork) : IDbMapper<T> where T : class, IBaseData
     {
-        public DbMapperBase(IUnitOfWork unitOfWork)
-        {
-            this.unitOfWork = unitOfWork;
-        }
-
         #region Variables
-        private IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork unitOfWork = unitOfWork;
         #endregion Variables
 
         #region Properties

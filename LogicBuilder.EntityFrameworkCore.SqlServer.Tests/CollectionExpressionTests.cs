@@ -107,7 +107,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         private static IDictionary<string, ParameterExpression> GetParameters()
             => new Dictionary<string, ParameterExpression>();
 
-        private Expression<Func<T, TResult>> GetExpression<T, TResult>(IExpressionDescriptor filterBody, string parameterName = "$it")
+        private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string parameterName = "$it")
         {
             IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
 
@@ -116,9 +116,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 new SelectorLambdaDescriptor
                 (
                     filterBody,
-                    typeof(T),
-                    typeof(TResult),
-                    parameterName
+                    typeof(T).AssemblyQualifiedName,
+                    parameterName,
+                    typeof(TResult).AssemblyQualifiedName
                 ),
                 opts => opts.Items["parameters"] = GetParameters()
             ).Build();

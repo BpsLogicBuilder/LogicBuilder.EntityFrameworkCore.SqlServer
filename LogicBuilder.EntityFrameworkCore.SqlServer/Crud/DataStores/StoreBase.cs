@@ -10,7 +10,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
 {
     abstract public class StoreBase : IStore
     {
-        public StoreBase(DbContext context)
+        protected StoreBase(DbContext context)
         {
             _unitOfWork = new UnitOfWork(context);
         }
@@ -20,7 +20,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
         #endregion Fields
 
         #region Methods
-        public async Task<ICollection<T>> GetAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryFunc = null) where T : BaseData
+        public async Task<ICollection<T>> GetAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryFunc = null) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().GetAsync
             (
@@ -29,7 +29,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
             );
         }
 
-        public async Task<IQueryable<T>> GetQueryableAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryableFunc = null) where T : BaseData
+        public async Task<IQueryable<T>> GetQueryableAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryableFunc = null) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().GetQueryableAsync
             (
@@ -38,34 +38,34 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
             );
         }
 
-        public async Task<int> CountAsync<T>(Expression<Func<T, bool>> filter = null) where T : BaseData
+        public async Task<int> CountAsync<T>(Expression<Func<T, bool>> filter = null) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().CountAsync(filter);
         }
 
-        public async Task<TReturn> QueryAsync<T, TReturn>(Func<IQueryable<T>, TReturn> queryableFunc) where T : BaseData
+        public async Task<TReturn> QueryAsync<T, TReturn>(Func<IQueryable<T>, TReturn> queryableFunc) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().QueryAsync(queryableFunc);
         }
 
-        public async Task<bool> SaveAsync<T>(ICollection<T> entities) where T : BaseData
+        public async Task<bool> SaveAsync<T>(ICollection<T> entities) where T : class, IBaseData
         {
             _unitOfWork.GetMapper<T>().AddChanges(entities);
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<bool> SaveGraphsAsync<T>(ICollection<T> entities) where T : BaseData
+        public async Task<bool> SaveGraphsAsync<T>(ICollection<T> entities) where T : class, IBaseData
         {
             _unitOfWork.GetMapper<T>().AddGraphChanges(entities);
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public void AddChanges<T>(ICollection<T> entities) where T : BaseData
+        public void AddChanges<T>(ICollection<T> entities) where T : class, IBaseData
         {
             _unitOfWork.GetMapper<T>().AddChanges(entities);
         }
 
-        public void AddGraphChanges<T>(ICollection<T> entities) where T : BaseData
+        public void AddGraphChanges<T>(ICollection<T> entities) where T : class, IBaseData
         {
             _unitOfWork.GetMapper<T>().AddGraphChanges(entities);
         }

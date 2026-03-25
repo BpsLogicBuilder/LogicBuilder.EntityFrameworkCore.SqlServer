@@ -1,3 +1,19 @@
+* 2026-03-25 - AB#97: Removing nuget.config.
+* 2026-03-25 - AB#97: Removing pacakge source mapping configuration from nuget.config.
+* 2026-03-25 - AB#97: Restoring GitHub packages to nuget.config.
+* 2026-03-25 - AB#97: Removing GitHub packages from nuget.config.
+* 2026-03-25 - AB#97: Adding nuget.config to solve package source issues.
+* 2026-03-25 - AB#97: Update EF Core and AutoMapper dependencies.
+* 2026-03-25 - AB#97: Remove NuGet.org package source configuration.
+* 2026-03-25 - AB#97: Update NuGet.org package source configuration.
+* 2026-03-25 - AB#97: Update NuGet.org package source configuration.
+* 2026-03-25 - AB#97: Explicitly adding NuGet.org as package source.
+* 2026-03-25 - AB#97: Update NuGet source config in CI workflow.
+* 2026-03-25 - AB#97: Refactor dotnet nuget add source command in ci.yml.
+* 2026-03-25 - AB#97: Refactor NuGet source setup in CI workflow.
+* 2026-03-25 - AB#97: Add custom NuGet source and auth to .NET setup in CI.
+* 2026-03-25 - AB#97: Refactor generics to use interfaces instead of dedicated base classes.
+* 2026-03-25 - AB#97: All tests working with updated Logic Builder libraries.
 * 2026-03-24 - AB#96: Remove unused using directive from StoreBase.cs
 * 2026-03-24 - AB#96: Update using directives in GenericRepository.cs
 * 2026-03-24 - AB#96: Remove obsolete methods.
