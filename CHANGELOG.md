@@ -1,3 +1,4 @@
+* 2026-03-25 - AB#97: Removing nuget.config.
 * 2026-03-25 - AB#97: Removing pacakge source mapping configuration from nuget.config.
 * 2026-03-25 - AB#97: Restoring GitHub packages to nuget.config.
 * 2026-03-25 - AB#97: Removing GitHub packages from nuget.config.
