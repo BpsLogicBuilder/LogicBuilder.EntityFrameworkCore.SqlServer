@@ -1,3 +1,4 @@
+* 2026-03-25 - AB#97: Update NuGet source config in CI workflow.
 * 2026-03-25 - AB#97: Refactor dotnet nuget add source command in ci.yml.
 * 2026-03-25 - AB#97: Refactor NuGet source setup in CI workflow.
 * 2026-03-25 - AB#97: Add custom NuGet source and auth to .NET setup in CI.
