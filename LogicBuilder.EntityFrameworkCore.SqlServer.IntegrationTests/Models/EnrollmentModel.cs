@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace Contoso.Domain.Entities
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
 {
     public class EnrollmentModel : BaseModelClass
     {
@@ -20,11 +19,5 @@ namespace Contoso.Domain.Entities
         public string CourseTitle { get; set; }
 
         public string StudentName { get; set; }
-
-        //[AlsoKnownAs("Enrollment.Course")]
-        //public CourseModel Course { get; set; }
-
-        //[AlsoKnownAs("Enrollment.Student")]
-        //public StudentModel Student { get; set; }
     }
 }

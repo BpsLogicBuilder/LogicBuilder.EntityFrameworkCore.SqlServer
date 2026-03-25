@@ -1,7 +1,7 @@
 ﻿using LogicBuilder.Domain;
 using System;
 
-namespace Contoso.Domain
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
 {
     abstract public class BaseModelClass : BaseModel
     {

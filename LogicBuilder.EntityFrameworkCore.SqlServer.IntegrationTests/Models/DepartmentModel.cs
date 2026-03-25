@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace Contoso.Domain.Entities
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
 {
     public class DepartmentModel : BaseModelClass
     {
@@ -24,8 +24,6 @@ namespace Contoso.Domain.Entities
 		public byte[] RowVersion { get; set; }
 
         public string AdministratorName { get; set; }
-        //[AlsoKnownAs("Department.Administrator")]
-        //public InstructorModel Administrator { get; set; }
 
 		public ICollection<CourseModel> Courses { get; set; }
     }

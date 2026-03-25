@@ -10,9 +10,9 @@ using System.Text.RegularExpressions;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 {
-    public class ExpressionStringBuilder : ExpressionVisitor
+    public partial class ExpressionStringBuilder : ExpressionVisitor
     {
-        private StringBuilder _builder = new StringBuilder();
+        private readonly StringBuilder _builder = new();
 
         private ExpressionStringBuilder()
         {
@@ -20,7 +20,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 
         public static string ToString(Expression expression)
         {
-            ExpressionStringBuilder visitor = new ExpressionStringBuilder();
+            ExpressionStringBuilder visitor = new();
             visitor.Visit(expression);
             return visitor._builder.ToString();
         }
@@ -96,7 +96,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
                     : node.Value;
 
             string GetOutString(object constant)
-                => constant.GetType() == typeof(string)
+                => (constant is string) 
                     ? string.Format(CultureInfo.InvariantCulture, "\"{0}\"", constant)
                     : string.Format(CultureInfo.InvariantCulture, "{0}", constant);
         }
@@ -131,22 +131,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
         protected override Expression VisitNew(NewExpression node)
         {
             Out("new " + GetTypeName() + "(");
-            VisitArguments(node.Arguments.ToArray());
+            VisitArguments([.. node.Arguments]);
             Out(")");
             return node;
 
             string GetTypeName()
-                => Regex.IsMatch(node.Type.Name, @"^AnonymousType[\d]+$") ? "AnonymousType" : node.Type.Name;
-        }
-
-        protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
-        {
-            return base.VisitMemberListBinding(node);
-        }
-
-        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
-        {
-            return base.VisitMemberMemberBinding(node);
+                => AnonymousTypeNameRegex().IsMatch(node.Type.Name) ? "AnonymousType" : node.Type.Name;
         }
 
         protected override Expression VisitMemberInit(MemberInitExpression node)
@@ -172,7 +162,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            int argindex = 0;
             Visit(node.Object);
 
             IEnumerable<Expression> arguments = node.Arguments;
@@ -180,11 +169,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             {
                 Visit(arguments.First());
                 arguments = arguments.Skip(1);
-                argindex++;
             }
 
             Out("." + node.Method.Name + "(");
-            VisitArguments(arguments.ToArray());
+            VisitArguments([.. arguments]);
             Out(")");
             return node;
         }
@@ -231,50 +219,35 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 
         private static string ToString(ExpressionType type)
         {
-            switch (type)
+            return type switch
             {
-                case ExpressionType.Add:
-                    return "+";
-                case ExpressionType.And:
-                    return "&";
-                case ExpressionType.AndAlso:
-                    return "AndAlso";
-                case ExpressionType.Divide:
-                    return "/";
-                case ExpressionType.Equal:
-                    return "==";
-                case ExpressionType.GreaterThan:
-                    return ">";
-                case ExpressionType.GreaterThanOrEqual:
-                    return ">=";
-                case ExpressionType.LessThan:
-                    return "<";
-                case ExpressionType.LessThanOrEqual:
-                    return "<=";
-                case ExpressionType.Modulo:
-                    return "%";
-                case ExpressionType.Multiply:
-                    return "*";
-                case ExpressionType.Negate:
-                    return "-";
-                case ExpressionType.Not:
-                    return "!";
-                case ExpressionType.NotEqual:
-                    return "!=";
-                case ExpressionType.Or:
-                    return "|";
-                case ExpressionType.OrElse:
-                    return "OrElse";
-                case ExpressionType.Subtract:
-                    return "-";
-                default:
-                    throw new NotImplementedException();
-            }
+                ExpressionType.Add => "+",
+                ExpressionType.And => "&",
+                ExpressionType.AndAlso => "AndAlso",
+                ExpressionType.Divide => "/",
+                ExpressionType.Equal => "==",
+                ExpressionType.GreaterThan => ">",
+                ExpressionType.GreaterThanOrEqual => ">=",
+                ExpressionType.LessThan => "<",
+                ExpressionType.LessThanOrEqual => "<=",
+                ExpressionType.Modulo => "%",
+                ExpressionType.Multiply => "*",
+                ExpressionType.Negate => "-",
+                ExpressionType.Not => "!",
+                ExpressionType.NotEqual => "!=",
+                ExpressionType.Or => "|",
+                ExpressionType.OrElse => "OrElse",
+                ExpressionType.Subtract => "-",
+                _ => throw new NotImplementedException(),
+            };
         }
 
         private void Out(string s)
         {
             _builder.Append(s);
         }
+
+        [GeneratedRegex(@"^AnonymousType[\d]+$")]
+        private static partial Regex AnonymousTypeNameRegex();
     }
 }

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
-using Contoso.Data.Entities;
 using LogicBuilder.EntityFrameworkCore.SqlServer.Mapping;
 using LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data;
 using LogicBuilder.Expressions.Utils;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Xunit;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests

@@ -12,7 +12,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Xunit;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
@@ -227,122 +226,134 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static List<object[]> DateTimeOffsetInequalities_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateTimeOffsetInequalitiesTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateTimeOffsetInequalitiesTheoryData> DateTimeOffsetInequalities_Data
+            =>
+            [
+                new DateTimeOffsetInequalitiesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeOffsetProp == $it.DateTimeOffsetProp)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetInequalitiesTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeOffsetProp != $it.DateTimeOffsetProp)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetInequalitiesTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeOffsetProp >= $it.DateTimeOffsetProp)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetInequalitiesTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeOffsetProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeOffsetProp <= $it.DateTimeOffsetProp)"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(DateTimeOffsetInequalities_Data))]
-        public void DateTimeOffsetInequalities(DescriptorBase filterBody, string expectedExpression)
+        [MemberData(nameof(DateTimeOffsetInequalities_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateTimeOffsetInequalities(DateTimeOffsetInequalitiesTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expectedExpression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
             {
                 return GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
             }
         }
 
-        public static List<object[]> DateInEqualities_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateInEqualitiesTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateInEqualitiesTheoryData> DateInEqualities_Data
+            =>
+            [
+                new DateInEqualitiesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeProp == $it.DateTimeProp)"
-                },
-                new object[]
-                {
+                ),
+                new DateInEqualitiesTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeProp != $it.DateTimeProp)"
-                },
-                new object[]
-                {
+                ),
+                new DateInEqualitiesTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeProp >= $it.DateTimeProp)"
-                },
-                new object[]
-                {
+                ),
+                new DateInEqualitiesTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName)),
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName))
                     ),
                     "$it => ($it.DateTimeProp <= $it.DateTimeProp)"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(DateInEqualities_Data))]
-        public void DateInEqualities(DescriptorBase filterBody, string expectedExpression)
+        [MemberData(nameof(DateInEqualities_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateInEqualities(DateInEqualitiesTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expectedExpression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
             {
                 return GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
             }
         }
@@ -688,11 +699,19 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         #endregion Arithmetic Operators
 
         #region NULL handling
-        public static List<object[]> NullHandling_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class NullHandlingTheoryData(DescriptorBase filterBody, object unitsInStock, object unitsOnOrder, bool expectedResult)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public object UnitsInStock { get; } = unitsInStock;
+            public object UnitsOnOrder { get; } = unitsOnOrder;
+            public bool ExpectedResult { get; } = expectedResult;
+        }
+
+        public static TheoryData<NullHandlingTheoryData> NullHandling_Data
+            =>
+            [
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -701,9 +720,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -712,9 +731,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     false
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -723,9 +742,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     false
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -734,9 +753,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     false
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -745,9 +764,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     false
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -756,9 +775,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     false
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new AddBinaryDescriptor
@@ -771,9 +790,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SubtractBinaryDescriptor
@@ -787,9 +806,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MultiplyBinaryDescriptor
@@ -803,9 +822,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DivideBinaryDescriptor
@@ -818,9 +837,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ModuloBinaryDescriptor
@@ -833,9 +852,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     null,
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -844,9 +863,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     1,
                     null,
                     false
-                },
-                new object[]
-                {
+                ),
+                new NullHandlingTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -855,32 +874,39 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     1,
                     1,
                     true
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(NullHandling_Data))]
-        public void NullHandling(DescriptorBase filterBody, object unitsInStock, object unitsOnOrder, bool expected)
+        [MemberData(nameof(NullHandling_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void NullHandling(NullHandlingTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result = RunFilter(filter, new Product { UnitsInStock = ToNullable<short>(unitsInStock), UnitsOnOrder = ToNullable<short>(unitsOnOrder) });
+            bool result = RunFilter(filter, new Product { UnitsInStock = ToNullable<short>(theoryData.UnitsInStock), UnitsOnOrder = ToNullable<short>(theoryData.UnitsOnOrder) });
 
             //assert
-            Assert.Equal(expected, result);
+            Assert.Equal(theoryData.ExpectedResult, result);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> NullHandling_LiteralNull_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class NullHandling_LiteralNullTheoryData(DescriptorBase filterBody, object unitsInStock, bool expectedResult)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public object UnitsInStock { get; } = unitsInStock;
+            public bool ExpectedResult { get; } = expectedResult;
+        }
+
+        public static TheoryData<NullHandling_LiteralNullTheoryData> NullHandling_LiteralNull_Data
+            =>
+            [
+                new NullHandling_LiteralNullTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -888,9 +914,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     null,
                     true
-                },
-                new object[]
-                {
+                ),
+                new NullHandling_LiteralNullTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)),
@@ -898,33 +924,38 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     null,
                     false
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(NullHandling_LiteralNull_Data))]
-        public void NullHandling_LiteralNull(DescriptorBase filterBody, object unitsInStock, bool expected)
+        [MemberData(nameof(NullHandling_LiteralNull_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void NullHandling_LiteralNull(NullHandling_LiteralNullTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result = RunFilter(filter, new Product { UnitsInStock = ToNullable<short>(unitsInStock) });
+            bool result = RunFilter(filter, new Product { UnitsInStock = ToNullable<short>(theoryData.UnitsInStock) });
 
             //assert
-            Assert.Equal(expected, result);
+            Assert.Equal(theoryData.ExpectedResult, result);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
         #endregion NULL handling
 
-        public static List<object[]> ComparisonsInvolvingCastsAndNullableValues_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class ComparisonsInvolvingCastsAndNullableValuesTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<ComparisonsInvolvingCastsAndNullableValuesTheoryData> ComparisonsInvolvingCastsAndNullableValues_Data
+            =>
+            [
+                new ComparisonsInvolvingCastsAndNullableValuesTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new IndexOfDescriptor
@@ -939,9 +970,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             typeof(int?).AssemblyQualifiedName
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new ComparisonsInvolvingCastsAndNullableValuesTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new IndexOfDescriptor
@@ -955,9 +986,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             typeof(int?).AssemblyQualifiedName
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new ComparisonsInvolvingCastsAndNullableValuesTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new IndexOfDescriptor
@@ -971,9 +1002,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             typeof(int?).AssemblyQualifiedName
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new ComparisonsInvolvingCastsAndNullableValuesTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new IndexOfDescriptor
@@ -987,9 +1018,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             typeof(int?).AssemblyQualifiedName
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new ComparisonsInvolvingCastsAndNullableValuesTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new IndexOfDescriptor
@@ -1003,9 +1034,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             typeof(int?).AssemblyQualifiedName
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new ComparisonsInvolvingCastsAndNullableValuesTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new IndexOfDescriptor
@@ -1019,12 +1050,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             typeof(int?).AssemblyQualifiedName
                         )
                     )
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(ComparisonsInvolvingCastsAndNullableValues_Data))]
-        public void ComparisonsInvolvingCastsAndNullableValues(DescriptorBase filterBody)
+        [MemberData(nameof(ComparisonsInvolvingCastsAndNullableValues_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void ComparisonsInvolvingCastsAndNullableValues(ComparisonsInvolvingCastsAndNullableValuesTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -1035,7 +1066,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
@@ -1174,11 +1205,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 {
                     Category = new Category
                     {
-                        EnumerableProducts = new Product[]
-                        {
+                        EnumerableProducts =
+                        [
                             new Product { ProductName = "Snacks" },
                             new Product { ProductName = "NonSnacks" }
-                        }
+                        ]
                     }
                 }
             );
@@ -1190,10 +1221,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 {
                     Category = new Category
                     {
-                        EnumerableProducts = new Product[]
-                        {
+                        EnumerableProducts =
+                        [
                             new Product { ProductName = "NonSnacks" }
-                        }
+                        ]
                     }
                 }
             );
@@ -1238,8 +1269,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     {
                         QueryableProducts = new Product[]
                         {
-                            new Product { ProductName = "Snacks" },
-                            new Product { ProductName = "NonSnacks" }
+                            new() { ProductName = "Snacks" },
+                            new() { ProductName = "NonSnacks" }
                         }.AsQueryable()
                     }
                 }
@@ -1254,7 +1285,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     {
                         QueryableProducts = new Product[]
                         {
-                            new Product { ProductName = "NonSnacks" }
+                            new() { ProductName = "NonSnacks" }
                         }.AsQueryable()
                     }
                 }
@@ -1285,11 +1316,17 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static List<object[]> AnyInOnNavigation_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class AnyInOnNavigationTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<AnyInOnNavigationTheoryData> AnyInOnNavigation_Data
+            =>
+            [
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1302,16 +1339,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("ProductID", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ 1 },
+                                [1],
                                 typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.QueryableProducts.Any(P => System.Collections.Generic.List`1[System.Int32].Contains(P.ProductID))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1324,16 +1361,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("ProductID", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ 1 },
+                                [1],
                                 typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.EnumerableProducts.Any(P => System.Collections.Generic.List`1[System.Int32].Contains(P.ProductID))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1346,16 +1383,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("GuidProperty", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
+                                [new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7")],
                                 typeof(Guid).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.QueryableProducts.Any(P => System.Collections.Generic.List`1[System.Guid].Contains(P.GuidProperty))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1368,16 +1405,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("GuidProperty", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
+                                [new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7")],
                                 typeof(Guid).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.EnumerableProducts.Any(P => System.Collections.Generic.List`1[System.Guid].Contains(P.GuidProperty))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1390,16 +1427,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("NullableGuidProperty", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
+                                [new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7")],
                                 typeof(Guid?).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.QueryableProducts.Any(P => System.Collections.Generic.List`1[System.Nullable`1[System.Guid]].Contains(P.NullableGuidProperty))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1412,16 +1449,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("NullableGuidProperty", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
+                                [new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7")],
                                 typeof(Guid?).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.EnumerableProducts.Any(P => System.Collections.Generic.List`1[System.Nullable`1[System.Guid]].Contains(P.NullableGuidProperty))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1434,16 +1471,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("Discontinued", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ false, null },
+                                [false, null],
                                 typeof(bool?).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.QueryableProducts.Any(P => System.Collections.Generic.List`1[System.Nullable`1[System.Boolean]].Contains(P.Discontinued))"
-                },
-                new object[]
-                {
+                ),
+                new AnyInOnNavigationTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1456,38 +1493,44 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("Discontinued", new ParameterDescriptor("P")),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ false, null },
+                                [false, null],
                                 typeof(bool?).AssemblyQualifiedName
                             )
                         ),
                         "P"
                     ),
                     "$it => $it.Category.EnumerableProducts.Any(P => System.Collections.Generic.List`1[System.Nullable`1[System.Boolean]].Contains(P.Discontinued))"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(AnyInOnNavigation_Data))]
-        public void AnyInOnNavigation(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(AnyInOnNavigation_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void AnyInOnNavigation(AnyInOnNavigationTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> AnyOnNavigation_Contradiction_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class AnyOnNavigation_ContradictionTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<AnyOnNavigation_ContradictionTheoryData> AnyOnNavigation_Contradiction_Data
+            =>
+            [
+                new AnyOnNavigation_ContradictionTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1499,9 +1542,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         "P"
                     ),
                     "$it => $it.Category.QueryableProducts.Any(P => False)"
-                },
-                new object[]
-                {
+                ),
+                new AnyOnNavigation_ContradictionTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1521,9 +1564,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         "P"
                     ),
                     "$it => $it.Category.QueryableProducts.Any(P => (False AndAlso (P.ProductName == \"Snacks\")))"
-                },
-                new object[]
-                {
+                ),
+                new AnyOnNavigation_ContradictionTheoryData
+                (
                     new AnyDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -1533,23 +1576,23 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => $it.Category.QueryableProducts.Any()"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(AnyOnNavigation_Contradiction_Data))]
-        public void AnyOnNavigation_Contradiction(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(AnyOnNavigation_Contradiction_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void AnyOnNavigation_Contradiction(AnyOnNavigation_ContradictionTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
@@ -1565,10 +1608,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 {
                     Category = new Category
                     {
-                        EnumerableProducts = new Product[]
-                        {
+                        EnumerableProducts =
+                        [
                             new Product { ProductName = "Snacks" }
-                        }
+                        ]
                     }
                 }
             );
@@ -1611,10 +1654,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 {
                     Category = new Category
                     {
-                        EnumerableProducts = new Product[]
-                        {
+                        EnumerableProducts =
+                        [
                             new Product { ProductName = "Snacks" }
-                        }
+                        ]
                     }
                 }
             );
@@ -1924,13 +1967,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             bool result1 = RunFilter
             (
                 filter,
-                new Product { AlternateIDs = new[] { 1, 2, 42 } }
+                new Product { AlternateIDs = [1, 2, 42] }
             );
 
             bool result2 = RunFilter
             (
                 filter,
-                new Product { AlternateIDs = new[] { 1, 2 } }
+                new Product { AlternateIDs = [1, 2] }
             );
 
             //assert
@@ -1988,7 +2031,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             bool result = RunFilter
             (
                 filter,
-                new Product { AlternateAddresses = new[] { new Address { City = "Redmond" } } }
+                new Product { AlternateAddresses = [new Address { City = "Redmond" }] }
             );
 
             //assert
@@ -2716,7 +2759,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result = RunFilter(filter, new Product { DiscontinuedDate = new DateTime(2000, 10, 8) });
+            bool result = RunFilter(filter, new Product { DiscontinuedDate = new DateTime(2000, 10, 8, 0, 0, 0, DateTimeKind.Unspecified) });
 
             //assert
             AssertFilterStringIsCorrect(filter, "$it => ($it.DiscontinuedDate.Value.Day == 8)");
@@ -2875,11 +2918,17 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static List<object[]> DateTimeOffsetFunctions_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateTimeOffsetFunctionsTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateTimeOffsetFunctionsTheoryData> DateTimeOffsetFunctions_Data
+            =>
+            [
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new YearDescriptor
@@ -2889,9 +2938,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ($it.DiscontinuedOffset.Year == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MonthDescriptor
@@ -2901,9 +2950,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ($it.DiscontinuedOffset.Month == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DayDescriptor
@@ -2913,9 +2962,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ($it.DiscontinuedOffset.Day == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new HourDescriptor
@@ -2925,9 +2974,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ($it.DiscontinuedOffset.Hour == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MinuteDescriptor
@@ -2937,9 +2986,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ($it.DiscontinuedOffset.Minute == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SecondDescriptor
@@ -2949,40 +2998,46 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ($it.DiscontinuedOffset.Second == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeOffsetFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new NowDateTimeDescriptor(),
-                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2016, 11, 8), new TimeSpan(0)))
+                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2016, 11, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0)))
                     ),
                     "$it => (DateTimeOffset.UtcNow == 11/08/2016 00:00:00 +00:00)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateTimeOffsetFunctions_Data))]
-        public void DateTimeOffsetFunctions(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateTimeOffsetFunctions_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateTimeOffsetFunctions(DateTimeOffsetFunctionsTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateTimeFunctions_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateTimeFunctionsTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateTimeFunctionsTheoryData> DateTimeFunctions_Data
+            =>
+            [
+                new DateTimeFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new YearDescriptor
@@ -2992,9 +3047,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ({0}.Year == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MonthDescriptor
@@ -3004,9 +3059,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ({0}.Month == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DayDescriptor
@@ -3016,9 +3071,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ({0}.Day == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new HourDescriptor
@@ -3028,9 +3083,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ({0}.Hour == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MinuteDescriptor
@@ -3040,9 +3095,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ({0}.Minute == 100)"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeFunctionsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SecondDescriptor
@@ -3052,31 +3107,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(100)
                     ),
                     "$it => ({0}.Second == 100)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateTimeFunctions_Data))]
-        public void DateTimeFunctions(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateTimeFunctions_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateTimeFunctions(DateTimeFunctionsTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, String.Format(expression, "$it.Birthday"));
+            AssertFilterStringIsCorrect(filter, String.Format(theoryData.ExpectedExpression, "$it.Birthday"));
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateFunctions_Nullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateFunctions_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateFunctions_NullableTheoryData> DateFunctions_Nullable_Data
+            =>
+            [
+                new DateFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new YearDescriptor
@@ -3086,9 +3147,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(2015)
                     ),
                     "$it => ($it.NullableDateProperty.Value.Year == 2015)"
-                },
-                new object[]
-                {
+                ),
+                new DateFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MonthDescriptor
@@ -3098,9 +3159,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12)
                     ),
                     "$it => ($it.NullableDateProperty.Value.Month == 12)"
-                },
-                new object[]
-                {
+                ),
+                new DateFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DayDescriptor
@@ -3110,31 +3171,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(23)
                     ),
                     "$it => ($it.NullableDateProperty.Value.Day == 23)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateFunctions_Nullable_Data))]
-        public void DateFunctions_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateFunctions_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateFunctions_Nullable(DateFunctions_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateOnlyFunctions_Nullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class DateOnlyFunctions_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateOnlyFunctions_NullableTheoryData> DateOnlyFunctions_Nullable_Data
+            =>
+            [
+                new DateOnlyFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new YearDescriptor
@@ -3144,9 +3211,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(2015)
                     ),
                     "$it => ($it.NullableDateOnlyProperty.Value.Year == 2015)"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MonthDescriptor
@@ -3156,9 +3223,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12)
                     ),
                     "$it => ($it.NullableDateOnlyProperty.Value.Month == 12)"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DayDescriptor
@@ -3168,31 +3235,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(23)
                     ),
                     "$it => ($it.NullableDateOnlyProperty.Value.Day == 23)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateOnlyFunctions_Nullable_Data))]
-        public void DateOnlyFunctions_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateOnlyFunctions_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateOnlyFunctions_Nullable(DateOnlyFunctions_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateFunctions_NonNullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateFunctions_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateFunctions_NonNullableTheoryData> DateFunctions_NonNullable_Data
+            =>
+            [
+                new DateFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new YearDescriptor
@@ -3202,9 +3275,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(2015)
                     ),
                     "$it => ($it.DateProperty.Year == 2015)"
-                },
-                new object[]
-                {
+                ),
+                new DateFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MonthDescriptor
@@ -3214,9 +3287,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12)
                     ),
                     "$it => ($it.DateProperty.Month == 12)"
-                },
-                new object[]
-                {
+                ),
+                new DateFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DayDescriptor
@@ -3226,31 +3299,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(23)
                     ),
                     "$it => ($it.DateProperty.Day == 23)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateFunctions_NonNullable_Data))]
-        public void DateFunctions_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateFunctions_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateFunctions_NonNullable(DateFunctions_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateOnlyFunctions_NonNullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class DateOnlyFunctions_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateOnlyFunctions_NonNullableTheoryData> DateOnlyFunctions_NonNullable_Data
+            =>
+            [
+                new DateOnlyFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new YearDescriptor
@@ -3260,9 +3339,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(2015)
                     ),
                     "$it => ($it.DateOnlyProperty.Year == 2015)"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MonthDescriptor
@@ -3272,9 +3351,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12)
                     ),
                     "$it => ($it.DateOnlyProperty.Month == 12)"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new DayDescriptor
@@ -3284,31 +3363,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(23)
                     ),
                     "$it => ($it.DateOnlyProperty.Day == 23)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateOnlyFunctions_NonNullable_Data))]
-        public void DateOnlyFunctions_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateOnlyFunctions_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateOnlyFunctions_NonNullable(DateOnlyFunctions_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeOfDayFunctions_Nullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class TimeOfDayFunctions_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeOfDayFunctions_NullableTheoryData> TimeOfDayFunctions_Nullable_Data
+            =>
+            [
+                new TimeOfDayFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new HourDescriptor
@@ -3318,9 +3403,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(10)
                     ),
                     "$it => ($it.NullableTimeOfDayProperty.Value.Hours == 10)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOfDayFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MinuteDescriptor
@@ -3330,9 +3415,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(20)
                     ),
                     "$it => ($it.NullableTimeOfDayProperty.Value.Minutes == 20)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOfDayFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SecondDescriptor
@@ -3342,31 +3427,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(30)
                     ),
                     "$it => ($it.NullableTimeOfDayProperty.Value.Seconds == 30)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeOfDayFunctions_Nullable_Data))]
-        public void TimeOfDayFunctions_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeOfDayFunctions_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeOfDayFunctions_Nullable(TimeOfDayFunctions_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeOnlyFunctions_Nullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class TimeOnlyFunctions_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeOnlyFunctions_NullableTheoryData> TimeOnlyFunctions_Nullable_Data
+            =>
+            [
+                new TimeOnlyFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new HourDescriptor
@@ -3376,9 +3467,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(10)
                     ),
                     "$it => ($it.NullableTimeOnlyProperty.Value.Hour == 10)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MinuteDescriptor
@@ -3388,9 +3479,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(20)
                     ),
                     "$it => ($it.NullableTimeOnlyProperty.Value.Minute == 20)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunctions_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SecondDescriptor
@@ -3400,31 +3491,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(30)
                     ),
                     "$it => ($it.NullableTimeOnlyProperty.Value.Second == 30)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeOnlyFunctions_Nullable_Data))]
-        public void TimeOnlyFunctions_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeOnlyFunctions_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeOnlyFunctions_Nullable(TimeOnlyFunctions_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeOfDayFunctions_NonNullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class TimeOfDayFunctions_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeOfDayFunctions_NonNullableTheoryData> TimeOfDayFunctions_NonNullable_Data
+            =>
+            [
+                new TimeOfDayFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new HourDescriptor
@@ -3434,9 +3531,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(10)
                     ),
                     "$it => ($it.TimeOfDayProperty.Hours == 10)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOfDayFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MinuteDescriptor
@@ -3446,9 +3543,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(20)
                     ),
                     "$it => ($it.TimeOfDayProperty.Minutes == 20)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOfDayFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SecondDescriptor
@@ -3458,31 +3555,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(30)
                     ),
                     "$it => ($it.TimeOfDayProperty.Seconds == 30)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeOfDayFunctions_NonNullable_Data))]
-        public void TimeOfDayFunctions_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeOfDayFunctions_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeOfDayFunctions_NonNullable(TimeOfDayFunctions_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeOnlyFunctions_NonNullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class TimeOnlyFunctions_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeOnlyFunctions_NonNullableTheoryData> TimeOnlyFunctions_NonNullable_Data
+            =>
+            [
+                new TimeOnlyFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new HourDescriptor
@@ -3492,9 +3595,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(10)
                     ),
                     "$it => ($it.TimeOnlyProperty.Hour == 10)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MinuteDescriptor
@@ -3504,9 +3607,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(20)
                     ),
                     "$it => ($it.TimeOnlyProperty.Minute == 20)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunctions_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new SecondDescriptor
@@ -3516,31 +3619,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(30)
                     ),
                     "$it => ($it.TimeOnlyProperty.Second == 30)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeOnlyFunctions_NonNullable_Data))]
-        public void TimeOnlyFunctions_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeOnlyFunctions_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeOnlyFunctions_NonNullable(TimeOnlyFunctions_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> FractionalsecondsFunction_Nullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class FractionalsecondsFunction_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<FractionalsecondsFunction_NullableTheoryData> FractionalsecondsFunction_Nullable_Data
+            =>
+            [
+                new FractionalsecondsFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FractionalSecondsDescriptor
@@ -3550,9 +3659,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(0.2m)
                     ),
                     "$it => ((Convert($it.DiscontinuedDate.Value.Millisecond) / 1000) == 0.2)"
-                },
-                new object[]
-                {
+                ),
+                new FractionalsecondsFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FractionalSecondsDescriptor
@@ -3562,9 +3671,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(0.2m)
                     ),
                     "$it => ((Convert($it.NullableTimeOfDayProperty.Value.Milliseconds) / 1000) == 0.2)"
-                },
-                new object[]
-                {
+                ),
+                new FractionalsecondsFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FractionalSecondsDescriptor
@@ -3574,31 +3683,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(0.2m)
                     ),
                     "$it => ((Convert($it.NullableTimeOnlyProperty.Value.Millisecond) / 1000) == 0.2)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(FractionalsecondsFunction_Nullable_Data))]
-        public void FractionalsecondsFunction_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(FractionalsecondsFunction_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void FractionalsecondsFunction_Nullable(FractionalsecondsFunction_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> FractionalsecondsFunction_NonNullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class FractionalsecondsFunction_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<FractionalsecondsFunction_NonNullableTheoryData> FractionalsecondsFunction_NonNullable_Data
+            =>
+            [
+                new FractionalsecondsFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FractionalSecondsDescriptor
@@ -3608,9 +3723,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(0.2m)
                     ),
                     "$it => ((Convert($it.NonNullableDiscontinuedDate.Millisecond) / 1000) == 0.2)"
-                },
-                new object[]
-                {
+                ),
+                new FractionalsecondsFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FractionalSecondsDescriptor
@@ -3620,9 +3735,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(0.2m)
                     ),
                     "$it => ((Convert($it.TimeOfDayProperty.Milliseconds) / 1000) == 0.2)"
-                },
-                new object[]
-                {
+                ),
+                new FractionalsecondsFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FractionalSecondsDescriptor
@@ -3632,31 +3747,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(0.2m)
                     ),
                     "$it => ((Convert($it.TimeOnlyProperty.Millisecond) / 1000) == 0.2)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(FractionalsecondsFunction_NonNullable_Data))]
-        public void FractionalsecondsFunction_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(FractionalsecondsFunction_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void FractionalsecondsFunction_NonNullable(FractionalsecondsFunction_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateFunction_Nullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateFunction_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateFunction_NullableTheoryData> DateFunction_Nullable_Data
+            =>
+            [
+                new DateFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3669,9 +3790,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.DiscontinuedDate.Value.Year * 10000) + ($it.DiscontinuedDate.Value.Month * 100)) + $it.DiscontinuedDate.Value.Day) == (((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateFunction_NullableTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3684,9 +3805,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.DiscontinuedDate.Value.Year * 10000) + ($it.DiscontinuedDate.Value.Month * 100)) + $it.DiscontinuedDate.Value.Day) < (((2016-02-26.Year * 10000) + (2016-02-26.Month * 100)) + 2016-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateFunction_NullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3699,49 +3820,55 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => ((((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day) >= ((($it.DiscontinuedDate.Value.Year * 10000) + ($it.DiscontinuedDate.Value.Month * 100)) + $it.DiscontinuedDate.Value.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateFunction_NullableTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName))
                     ),
                     "$it => (null != $it.DiscontinuedDate)"
-                },
-                new object[]
-                {
+                ),
+                new DateFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName)),
                         new ConstantDescriptor(null)
                     ),
                     "$it => ($it.DiscontinuedDate == null)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateFunction_Nullable_Data))]
-        public void DateFunction_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateFunction_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateFunction_Nullable(DateFunction_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateOnlyFunction_Nullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class DateOnlyFunction_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateOnlyFunction_NullableTheoryData> DateOnlyFunction_Nullable_Data
+            =>
+            [
+                new DateOnlyFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3754,9 +3881,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.DiscontinuedDate.Value.Year * 10000) + ($it.DiscontinuedDate.Value.Month * 100)) + $it.DiscontinuedDate.Value.Day) == (((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunction_NullableTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3769,9 +3896,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.DiscontinuedDate.Value.Year * 10000) + ($it.DiscontinuedDate.Value.Month * 100)) + $it.DiscontinuedDate.Value.Day) < (((2016-02-26.Year * 10000) + (2016-02-26.Month * 100)) + 2016-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunction_NullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3784,49 +3911,55 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => ((((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day) >= ((($it.DiscontinuedDate.Value.Year * 10000) + ($it.DiscontinuedDate.Value.Month * 100)) + $it.DiscontinuedDate.Value.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunction_NullableTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName))
                     ),
                     "$it => (null != $it.DiscontinuedDate)"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName)),
                         new ConstantDescriptor(null)
                     ),
                     "$it => ($it.DiscontinuedDate == null)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DateOnlyFunction_Nullable_Data))]
-        public void DateOnlyFunction_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateOnlyFunction_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateOnlyFunction_Nullable(DateOnlyFunction_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateFunction_NonNullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateFunction_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateFunction_NonNullableTheoryData> DateFunction_NonNullable_Data
+            =>
+            [
+                new DateFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3839,9 +3972,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.NonNullableDiscontinuedDate.Year * 10000) + ($it.NonNullableDiscontinuedDate.Month * 100)) + $it.NonNullableDiscontinuedDate.Day) == (((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateFunction_NonNullableTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3854,9 +3987,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.NonNullableDiscontinuedDate.Year * 10000) + ($it.NonNullableDiscontinuedDate.Month * 100)) + $it.NonNullableDiscontinuedDate.Day) < (((2016-02-26.Year * 10000) + (2016-02-26.Month * 100)) + 2016-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateFunction_NonNullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3869,31 +4002,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => ((((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day) >= ((($it.NonNullableDiscontinuedDate.Year * 10000) + ($it.NonNullableDiscontinuedDate.Month * 100)) + $it.NonNullableDiscontinuedDate.Day))"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(DateFunction_NonNullable_Data))]
-        public void DateFunction_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateFunction_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateFunction_NonNullable(DateFunction_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DateOnlyFunction_NonNullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class DateOnlyFunction_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateOnlyFunction_NonNullableTheoryData> DateOnlyFunction_NonNullable_Data
+            =>
+            [
+                new DateOnlyFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3906,9 +4045,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.NonNullableDiscontinuedDate.Year * 10000) + ($it.NonNullableDiscontinuedDate.Month * 100)) + $it.NonNullableDiscontinuedDate.Day) == (((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunction_NonNullableTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3921,9 +4060,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((($it.NonNullableDiscontinuedDate.Year * 10000) + ($it.NonNullableDiscontinuedDate.Month * 100)) + $it.NonNullableDiscontinuedDate.Day) < (((2016-02-26.Year * 10000) + (2016-02-26.Month * 100)) + 2016-02-26.Day))"
-                },
-                new object[]
-                {
+                ),
+                new DateOnlyFunction_NonNullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericDateDescriptor
@@ -3936,31 +4075,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => ((((2015-02-26.Year * 10000) + (2015-02-26.Month * 100)) + 2015-02-26.Day) >= ((($it.NonNullableDiscontinuedDate.Year * 10000) + ($it.NonNullableDiscontinuedDate.Month * 100)) + $it.NonNullableDiscontinuedDate.Day))"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(DateOnlyFunction_NonNullable_Data))]
-        public void DateOnlyFunction_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(DateOnlyFunction_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateOnlyFunction_NonNullable(DateOnlyFunction_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeFunction_Nullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class TimeFunction_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeFunction_NullableTheoryData> TimeFunction_Nullable_Data
+            =>
+            [
+                new TimeFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -3973,9 +4118,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.DiscontinuedDate.Value.Hour) * 36000000000) + ((Convert($it.DiscontinuedDate.Value.Minute) * 600000000) + ((Convert($it.DiscontinuedDate.Value.Second) * 10000000) + Convert($it.DiscontinuedDate.Value.Millisecond)))) == ((Convert(01:02:03.0040000.Hours) * 36000000000) + ((Convert(01:02:03.0040000.Minutes) * 600000000) + ((Convert(01:02:03.0040000.Seconds) * 10000000) + Convert(01:02:03.0040000.Milliseconds)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeFunction_NullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -3988,9 +4133,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.DiscontinuedDate.Value.Hour) * 36000000000) + ((Convert($it.DiscontinuedDate.Value.Minute) * 600000000) + ((Convert($it.DiscontinuedDate.Value.Second) * 10000000) + Convert($it.DiscontinuedDate.Value.Millisecond)))) >= ((Convert(01:02:03.0040000.Hours) * 36000000000) + ((Convert(01:02:03.0040000.Minutes) * 600000000) + ((Convert(01:02:03.0040000.Seconds) * 10000000) + Convert(01:02:03.0040000.Milliseconds)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeFunction_NullableTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4003,49 +4148,55 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert(01:02:03.0040000.Hours) * 36000000000) + ((Convert(01:02:03.0040000.Minutes) * 600000000) + ((Convert(01:02:03.0040000.Seconds) * 10000000) + Convert(01:02:03.0040000.Milliseconds)))) <= ((Convert($it.DiscontinuedDate.Value.Hour) * 36000000000) + ((Convert($it.DiscontinuedDate.Value.Minute) * 600000000) + ((Convert($it.DiscontinuedDate.Value.Second) * 10000000) + Convert($it.DiscontinuedDate.Value.Millisecond)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeFunction_NullableTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName))
                     ),
                     "$it => (null != $it.DiscontinuedDate)"
-                },
-                new object[]
-                {
+                ),
+                new TimeFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName)),
                         new ConstantDescriptor(null)
                     ),
                     "$it => ($it.DiscontinuedDate == null)"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeFunction_Nullable_Data))]
-        public void TimeFunction_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeFunction_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeFunction_Nullable(TimeFunction_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeOnlyFunction_Nullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class TimeOnlyFunction_NullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeOnlyFunction_NullableTheoryData> TimeOnlyFunction_Nullable_Data
+            =>
+            [
+                new TimeOnlyFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4058,9 +4209,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.DiscontinuedDate.Value.Hour) * 36000000000) + ((Convert($it.DiscontinuedDate.Value.Minute) * 600000000) + ((Convert($it.DiscontinuedDate.Value.Second) * 10000000) + Convert($it.DiscontinuedDate.Value.Millisecond)))) == ((Convert(01:02:03.0040000.Hour) * 36000000000) + ((Convert(01:02:03.0040000.Minute) * 600000000) + ((Convert(01:02:03.0040000.Second) * 10000000) + Convert(01:02:03.0040000.Millisecond)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunction_NullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4073,9 +4224,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.DiscontinuedDate.Value.Hour) * 36000000000) + ((Convert($it.DiscontinuedDate.Value.Minute) * 600000000) + ((Convert($it.DiscontinuedDate.Value.Second) * 10000000) + Convert($it.DiscontinuedDate.Value.Millisecond)))) >= ((Convert(01:02:03.0040000.Hour) * 36000000000) + ((Convert(01:02:03.0040000.Minute) * 600000000) + ((Convert(01:02:03.0040000.Second) * 10000000) + Convert(01:02:03.0040000.Millisecond)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunction_NullableTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4088,49 +4239,55 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert(01:02:03.0040000.Hour) * 36000000000) + ((Convert(01:02:03.0040000.Minute) * 600000000) + ((Convert(01:02:03.0040000.Second) * 10000000) + Convert(01:02:03.0040000.Millisecond)))) <= ((Convert($it.DiscontinuedDate.Value.Hour) * 36000000000) + ((Convert($it.DiscontinuedDate.Value.Minute) * 600000000) + ((Convert($it.DiscontinuedDate.Value.Second) * 10000000) + Convert($it.DiscontinuedDate.Value.Millisecond)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunction_NullableTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName))
                     ),
                     "$it => (null != $it.DiscontinuedDate)"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunction_NullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DiscontinuedDate", new ParameterDescriptor(parameterName)),
                         new ConstantDescriptor(null)
                     ),
                     "$it => ($it.DiscontinuedDate == null)"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeOnlyFunction_Nullable_Data))]
-        public void TimeOnlyFunction_Nullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeOnlyFunction_Nullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeOnlyFunction_Nullable(TimeOnlyFunction_NullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeFunction_NonNullable_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class TimeFunction_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeFunction_NonNullableTheoryData> TimeFunction_NonNullable_Data
+            =>
+            [
+                new TimeFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4143,9 +4300,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.NonNullableDiscontinuedDate.Hour) * 36000000000) + ((Convert($it.NonNullableDiscontinuedDate.Minute) * 600000000) + ((Convert($it.NonNullableDiscontinuedDate.Second) * 10000000) + Convert($it.NonNullableDiscontinuedDate.Millisecond)))) == ((Convert(01:02:03.0040000.Hours) * 36000000000) + ((Convert(01:02:03.0040000.Minutes) * 600000000) + ((Convert(01:02:03.0040000.Seconds) * 10000000) + Convert(01:02:03.0040000.Milliseconds)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeFunction_NonNullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4158,9 +4315,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.NonNullableDiscontinuedDate.Hour) * 36000000000) + ((Convert($it.NonNullableDiscontinuedDate.Minute) * 600000000) + ((Convert($it.NonNullableDiscontinuedDate.Second) * 10000000) + Convert($it.NonNullableDiscontinuedDate.Millisecond)))) >= ((Convert(01:02:03.0040000.Hours) * 36000000000) + ((Convert(01:02:03.0040000.Minutes) * 600000000) + ((Convert(01:02:03.0040000.Seconds) * 10000000) + Convert(01:02:03.0040000.Milliseconds)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeFunction_NonNullableTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4173,31 +4330,37 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert(01:02:03.0040000.Hours) * 36000000000) + ((Convert(01:02:03.0040000.Minutes) * 600000000) + ((Convert(01:02:03.0040000.Seconds) * 10000000) + Convert(01:02:03.0040000.Milliseconds)))) <= ((Convert($it.NonNullableDiscontinuedDate.Hour) * 36000000000) + ((Convert($it.NonNullableDiscontinuedDate.Minute) * 600000000) + ((Convert($it.NonNullableDiscontinuedDate.Second) * 10000000) + Convert($it.NonNullableDiscontinuedDate.Millisecond)))))"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeFunction_NonNullable_Data))]
-        public void TimeFunction_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeFunction_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeFunction_NonNullable(TimeFunction_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> TimeOnlyFunction_NonNullable_Data
-            => new()
-            {
-                new object[]
-                {
+        public class TimeOnlyFunction_NonNullableTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<TimeOnlyFunction_NonNullableTheoryData> TimeOnlyFunction_NonNullable_Data
+            =>
+            [
+                new TimeOnlyFunction_NonNullableTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4210,9 +4373,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.NonNullableDiscontinuedDate.Hour) * 36000000000) + ((Convert($it.NonNullableDiscontinuedDate.Minute) * 600000000) + ((Convert($it.NonNullableDiscontinuedDate.Second) * 10000000) + Convert($it.NonNullableDiscontinuedDate.Millisecond)))) == ((Convert(01:02:03.0040000.Hour) * 36000000000) + ((Convert(01:02:03.0040000.Minute) * 600000000) + ((Convert(01:02:03.0040000.Second) * 10000000) + Convert(01:02:03.0040000.Millisecond)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunction_NonNullableTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4225,9 +4388,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert($it.NonNullableDiscontinuedDate.Hour) * 36000000000) + ((Convert($it.NonNullableDiscontinuedDate.Minute) * 600000000) + ((Convert($it.NonNullableDiscontinuedDate.Second) * 10000000) + Convert($it.NonNullableDiscontinuedDate.Millisecond)))) >= ((Convert(01:02:03.0040000.Hour) * 36000000000) + ((Convert(01:02:03.0040000.Minute) * 600000000) + ((Convert(01:02:03.0040000.Second) * 10000000) + Convert(01:02:03.0040000.Millisecond)))))"
-                },
-                new object[]
-                {
+                ),
+                new TimeOnlyFunction_NonNullableTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new ConvertToNumericTimeDescriptor
@@ -4240,23 +4403,23 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         )
                     ),
                     "$it => (((Convert(01:02:03.0040000.Hour) * 36000000000) + ((Convert(01:02:03.0040000.Minute) * 600000000) + ((Convert(01:02:03.0040000.Second) * 10000000) + Convert(01:02:03.0040000.Millisecond)))) <= ((Convert($it.NonNullableDiscontinuedDate.Hour) * 36000000000) + ((Convert($it.NonNullableDiscontinuedDate.Minute) * 600000000) + ((Convert($it.NonNullableDiscontinuedDate.Second) * 10000000) + Convert($it.NonNullableDiscontinuedDate.Millisecond)))))"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(TimeOnlyFunction_NonNullable_Data))]
-        public void TimeOnlyFunction_NonNullable(DescriptorBase filterBody, string expression)
+        [MemberData(nameof(TimeOnlyFunction_NonNullable_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void TimeOnlyFunction_NonNullable(TimeOnlyFunction_NonNullableTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
         #endregion Date Functions
@@ -4341,24 +4504,30 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static IEnumerable<object[]> MathRoundDecimal_DataSet
-            => new List<object[]>
-                {
-                    new object[] { 5.9m, true },
-                    new object[] { 5.4m, false }
-                };
+        public class MathRoundDecimalTheoryData(decimal? unitPrice, bool expected)
+        {
+            public decimal? UnitPrice { get; } = unitPrice;
+            public bool Expected { get; } = expected;
+        }
 
-        [Theory, MemberData(nameof(MathRoundDecimal_DataSet))]
-        public void MathRoundDecimal(decimal? unitPrice, bool expected)
+        public static TheoryData<MathRoundDecimalTheoryData> MathRoundDecimal_DataSet
+            =>
+                [
+                    new MathRoundDecimalTheoryData(5.9m, true),
+                    new MathRoundDecimalTheoryData(5.4m, false)
+                ];
+
+        [Theory]
+        [MemberData(nameof(MathRoundDecimal_DataSet), MemberType = typeof(FilterDescriptorTests))]
+        public void MathRoundDecimal(MathRoundDecimalTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result = RunFilter(filter, new Product { UnitPrice = ToNullable<decimal>(unitPrice) });
+            bool result = RunFilter(filter, new Product { UnitPrice = ToNullable<decimal>(theoryData.UnitPrice) });
 
             //assert
             AssertFilterStringIsCorrect(filter, string.Format(CultureInfo.InvariantCulture, "$it => ($it.UnitPrice.Value.Round() > {0:0.00})", 5.0));
-            Assert.Equal(expected, result);
-
+            Assert.Equal(theoryData.Expected, result);
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
@@ -4499,23 +4668,28 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static IEnumerable<object[]> MathFloorDecimal_DataSet
-            => new List<object[]>
-                {
-                    new object[] { 5.4m, true },
-                    new object[] { 4.4m, false }
-                };
+        public class MathFloorDecimalTheoryData(decimal? unitPrice, bool expected)
+        {
+            public decimal? UnitPrice { get; } = unitPrice;
+            public bool Expected { get; } = expected;
+        }
 
-        [Theory, MemberData(nameof(MathFloorDecimal_DataSet))]
-        public void MathFloorDecimal(decimal? unitPrice, bool expected)
+        public static TheoryData<MathFloorDecimalTheoryData> MathFloorDecimal_DataSet
+            =>
+                [
+                    new MathFloorDecimalTheoryData(5.4m, true),
+                    new MathFloorDecimalTheoryData(4.4m, false)
+                ];
+
+        [Theory, MemberData(nameof(MathFloorDecimal_DataSet), MemberType = typeof(FilterDescriptorTests))]
+        public void MathFloorDecimal(MathFloorDecimalTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result = RunFilter(filter, new Product { UnitPrice = ToNullable<decimal>(unitPrice) });
-
+            bool result = RunFilter(filter, new Product { UnitPrice = ToNullable<decimal>(theoryData.UnitPrice) });
             //assert
             AssertFilterStringIsCorrect(filter, "$it => ($it.UnitPrice.Value.Floor() == 5)");
-            Assert.Equal(expected, result);
+            Assert.Equal(theoryData.Expected, result);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -4657,24 +4831,29 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static IEnumerable<object[]> MathCeilingDecimal_DataSet
-            => new List<object[]>
-                {
-                    new object[] { 4.1m, true },
-                    new object[] { 5.9m, false }
-                };
+        public class MathCeilingDecimalTheoryData(decimal? unitPrice, bool expected)
+        {
+            public decimal? UnitPrice { get; } = unitPrice;
+            public bool Expected { get; } = expected;
+        }
 
-        [Theory, MemberData(nameof(MathCeilingDecimal_DataSet))]
-        public void MathCeilingDecimal(object unitPrice, bool expected)
+        public static TheoryData<MathCeilingDecimalTheoryData> MathCeilingDecimal_DataSet
+            =>
+                [
+                    new MathCeilingDecimalTheoryData(4.1m, true),
+                    new MathCeilingDecimalTheoryData(5.9m, false)
+                ];
+
+        [Theory, MemberData(nameof(MathCeilingDecimal_DataSet), MemberType = typeof(FilterDescriptorTests))]
+        public void MathCeilingDecimal(MathCeilingDecimalTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result = RunFilter(filter, new Product { UnitPrice = ToNullable<decimal>(unitPrice) });
+            bool result = RunFilter(filter, new Product { UnitPrice = ToNullable<decimal>(theoryData.UnitPrice) });
 
             //assert
             AssertFilterStringIsCorrect(filter, "$it => ($it.UnitPrice.Value.Ceiling() == 5)");
-            Assert.Equal(expected, result);
-
+            Assert.Equal(theoryData.Expected, result);
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
@@ -4791,11 +4970,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static List<object[]> MathFunctions_VariousTypes_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class MathFunctions_VariousTypesTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<MathFunctions_VariousTypesTheoryData> MathFunctions_VariousTypes_Data
+            =>
+            [
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FloorDescriptor
@@ -4807,9 +4991,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new RoundDescriptor
@@ -4821,9 +5005,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new CeilingDescriptor
@@ -4835,9 +5019,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FloorDescriptor
@@ -4849,9 +5033,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("DoubleProp", new ParameterDescriptor(parameterName))
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new RoundDescriptor
@@ -4863,9 +5047,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("DoubleProp", new ParameterDescriptor(parameterName))
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new CeilingDescriptor
@@ -4877,9 +5061,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("DoubleProp", new ParameterDescriptor(parameterName))
                         )
                     )
-                },
-                    new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new FloorDescriptor
@@ -4891,9 +5075,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("DecimalProp", new ParameterDescriptor(parameterName))
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new RoundDescriptor
@@ -4905,9 +5089,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("DecimalProp", new ParameterDescriptor(parameterName))
                         )
                     )
-                },
-                new object[]
-                {
+                ),
+                new MathFunctions_VariousTypesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new CeilingDescriptor
@@ -4919,12 +5103,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new MemberSelectorDescriptor("DecimalProp", new ParameterDescriptor(parameterName))
                         )
                     )
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(MathFunctions_VariousTypes_Data))]
-        public void MathFunctions_VariousTypes(DescriptorBase filterBody)
+        [MemberData(nameof(MathFunctions_VariousTypes_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void MathFunctions_VariousTypes(MathFunctions_VariousTypesTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -4936,7 +5120,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
         #endregion Math Functions
@@ -5084,46 +5268,52 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static List<object[]> DateTimeExpression_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class DateTimeExpressionTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<DateTimeExpressionTheoryData> DateTimeExpression_Data
+            =>
+            [
+                new DateTimeExpressionTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0), TimeSpan.Zero))
+                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0, DateTimeKind.Unspecified), TimeSpan.Zero))
                     ),
                     "$it => ($it.DateTimeProp == {0})"
-                },
-                new object[]
-                {
+                ),
+                new DateTimeExpressionTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("DateTimeProp", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0), TimeSpan.Zero))
+                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0, DateTimeKind.Unspecified), TimeSpan.Zero))
                     ),
                     "$it => ($it.DateTimeProp < {0})"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(DateTimeExpression_Data))]
-        public void DateTimeExpression(DescriptorBase filterBody, string expectedExpression)
+        [MemberData(nameof(DateTimeExpression_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DateTimeExpression(DateTimeExpressionTheoryData theoryData)
         {
             //arrange
-            var dateTime = new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0), TimeSpan.Zero);
+            var dateTime = new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0, DateTimeKind.Unspecified), TimeSpan.Zero);
 
             //act
             var filter = CreateFilter<DataTypes>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, string.Format(CultureInfo.InvariantCulture, expectedExpression, dateTime));
+            AssertFilterStringIsCorrect(filter, string.Format(CultureInfo.InvariantCulture, theoryData.ExpectedExpression, dateTime));
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
@@ -5185,7 +5375,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
             //assert
             AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum].Contains($it.SimpleEnumProp)");
-            Assert.Equal(new[] { SimpleEnum.First, SimpleEnum.Second }, values);
+            Assert.Equal([SimpleEnum.First, SimpleEnum.Second], values);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5208,7 +5398,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
             //assert
             AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[System.Nullable`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum]].Contains($it.NullableSimpleEnumProp)");
-            Assert.Equal(new SimpleEnum?[] { SimpleEnum.First, SimpleEnum.Second }, values);
+            Assert.Equal([SimpleEnum.First, SimpleEnum.Second], values);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5231,7 +5421,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
             //assert
             AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[System.Nullable`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum]].Contains($it.NullableSimpleEnumProp)");
-            Assert.Equal(new SimpleEnum?[] { SimpleEnum.First, null }, values);
+            Assert.Equal([SimpleEnum.First, null], values);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5443,8 +5633,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         {
             //act
             var filter = CreateFilter<Product>();
-            bool result1 = RunFilter(filter, new Product { Category = new Category { Products = new Product[] { new DerivedProduct { DerivedProductName = "DerivedProductName" } } } });
-            bool result2 = RunFilter(filter, new Product { Category = new Category { Products = new Product[] { new DerivedProduct { DerivedProductName = "NotDerivedProductName" } } } });
+            bool result1 = RunFilter(filter, new Product { Category = new Category { Products = [new DerivedProduct { DerivedProductName = "DerivedProductName" }] } });
+            bool result2 = RunFilter(filter, new Product { Category = new Category { Products = [new DerivedProduct { DerivedProductName = "NotDerivedProductName" }] } });
 
             //assert
             Assert.True(result1);
@@ -5502,11 +5692,16 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 );
         }
 
-        public static List<object[]> Inheritance_WithDerivedInstance_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class Inheritance_WithDerivedInstanceTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<Inheritance_WithDerivedInstanceTheoryData> Inheritance_WithDerivedInstance_Data
+            =>
+            [
+                new Inheritance_WithDerivedInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5520,9 +5715,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor("ProductName")
                     )
-                },
-                new object[]
-                {
+                ),
+                new Inheritance_WithDerivedInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5536,9 +5731,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor("DerivedProductName")
                     )
-                },
-                new object[]
-                {
+                ),
+                new Inheritance_WithDerivedInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5556,9 +5751,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor(123)
                     )
-                },
-                new object[]
-                {
+                ),
+                new Inheritance_WithDerivedInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5580,12 +5775,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor(123)
                     )
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(Inheritance_WithDerivedInstance_Data))]
-        public void Inheritance_WithDerivedInstance(DescriptorBase filterBody)
+        [MemberData(nameof(Inheritance_WithDerivedInstance_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void Inheritance_WithDerivedInstance(Inheritance_WithDerivedInstanceTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DerivedProduct>();
@@ -5597,15 +5792,20 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> Inheritance_WithBaseInstance_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class Inheritance_WithBaseInstanceTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<Inheritance_WithBaseInstanceTheoryData> Inheritance_WithBaseInstance_Data
+            =>
+            [
+                new Inheritance_WithBaseInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5619,9 +5819,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor("DerivedProductName")
                     )
-                },
-                new object[]
-                {
+                ),
+                new Inheritance_WithBaseInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5639,9 +5839,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor(123)
                     )
-                },
-                new object[]
-                {
+                ),
+                new Inheritance_WithBaseInstanceTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor
@@ -5663,12 +5863,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new ConstantDescriptor(123)
                     )
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(Inheritance_WithBaseInstance_Data))]
-        public void Inheritance_WithBaseInstance(DescriptorBase filterBody)
+        [MemberData(nameof(Inheritance_WithBaseInstance_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void Inheritance_WithBaseInstance(Inheritance_WithBaseInstanceTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -5679,96 +5879,102 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> CastMethod_Succeeds_Data 
-            => new()
-            {
-                new object[]
-                {
+        public class CastMethod_SucceedsTheoryData(DescriptorBase filterBody, string expectedResult)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedResult { get; } = expectedResult;
+        }
+
+        public static TheoryData<CastMethod_SucceedsTheoryData> CastMethod_Succeeds_Data
+            =>
+            [
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor(null)
                     ),
                     "$it => (null == null)"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor(123)
                     ),
                     "$it => (null == Convert(123))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor(123)
                     ),
                     "$it => (null != Convert(123))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor(true)
                     ),
                     "$it => (null != Convert(True))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor(1)
                     ),
                     "$it => (null != Convert(1))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
-                        new ConstantDescriptor(new Guid())
+                        new ConstantDescriptor(Guid.Empty)
                     ),
                     "$it => (null == Convert(00000000-0000-0000-0000-000000000000))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor("123")
                     ),
                     "$it => (null != \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
-                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2001, 1, 1, 12, 0, 0), new TimeSpan(8, 0, 0)))
+                        new ConstantDescriptor(new DateTimeOffset(new DateTime(2001, 1, 1, 12, 0, 0, DateTimeKind.Unspecified), new TimeSpan(8, 0, 0)))
                     ),
                     "$it => (null == Convert(01/01/2001 12:00:00 +08:00))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
                         new ConstantDescriptor(new TimeSpan(7775999999000))
                     ),
                     "$it => (null == Convert(8.23:59:59.9999000))"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5778,9 +5984,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.IntProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5790,9 +5996,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.LongProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5802,9 +6008,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.SingleProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5814,9 +6020,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.DoubleProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5826,9 +6032,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.DecimalProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5838,9 +6044,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.BoolProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5850,9 +6056,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.ByteProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5862,18 +6068,18 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.GuidProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("StringProp", new ParameterDescriptor(parameterName)),
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.StringProp == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5883,9 +6089,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.DateTimeOffsetProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5895,9 +6101,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => ($it.TimeSpanProp.ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5907,9 +6113,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (Convert($it.SimpleEnumProp).ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5919,9 +6125,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (Convert($it.FlagsEnumProp).ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5931,9 +6137,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (Convert($it.LongEnumProp).ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5943,9 +6149,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableIntProp.HasValue, $it.NullableIntProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5955,9 +6161,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableLongProp.HasValue, $it.NullableLongProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5967,9 +6173,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableSingleProp.HasValue, $it.NullableSingleProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5979,9 +6185,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableDoubleProp.HasValue, $it.NullableDoubleProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -5991,9 +6197,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableDecimalProp.HasValue, $it.NullableDecimalProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6003,9 +6209,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableBoolProp.HasValue, $it.NullableBoolProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6015,9 +6221,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableByteProp.HasValue, $it.NullableByteProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6027,9 +6233,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableGuidProp.HasValue, $it.NullableGuidProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6039,9 +6245,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableDateTimeOffsetProp.HasValue, $it.NullableDateTimeOffsetProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6051,9 +6257,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableTimeSpanProp.HasValue, $it.NullableTimeSpanProp.Value.ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6063,9 +6269,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (IIF($it.NullableSimpleEnumProp.HasValue, Convert($it.NullableSimpleEnumProp.Value).ToString(), null) == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertDescriptor
@@ -6076,9 +6282,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor((long)123)
                     ),
                     "$it => (Convert($it.IntProp) == 123)"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertDescriptor
@@ -6089,9 +6295,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(1.23d)
                     ),
                     "$it => (Convert($it.NullableLongProp) == 1.23)"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConvertDescriptor
@@ -6102,9 +6308,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(null)
                     ),
                     "$it => (Convert(Convert(2147483647)) != null)"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6114,9 +6320,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("1")
                     ),
                     "$it => (Convert(Second).ToString() == \"1\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -6134,9 +6340,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("123")
                     ),
                     "$it => (Convert(Convert($it.IntProp)).ToString() == \"123\")"
-                },
-                new object[]
-                {
+                ),
+                new CastMethod_SucceedsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConvertToEnumDescriptor
@@ -6147,576 +6353,587 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(null)
                     ),
                     "$it => (Convert(123) != null)"
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(CastMethod_Succeeds_Data))]
-        public void CastMethod_Succeeds(DescriptorBase filterBody, string expectedResult)
+        [MemberData(nameof(CastMethod_Succeeds_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void CastMethod_Succeeds(CastMethod_SucceedsTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expectedResult);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedResult);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
         #endregion Casts
 
         #region 'isof' in query option
-        public static List<object[]> IsofMethod_Succeeds_Data 
-            => new()
-            {
-                new object []
-                {
+        public class IsofMethod_SucceedsTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<IsofMethod_SucceedsTheoryData> IsofMethod_Succeeds_Data
+            =>
+            [
+                new IsofMethod_SucceedsTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(short).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it Is System.Int16), True, False)"
-                },
-                new object []
-                {
+                ),
+                new IsofMethod_SucceedsTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Product).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Product), True, False)"
-                },
-                new object []
-                {
+                ),
+                new IsofMethod_SucceedsTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
                         typeof(string).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.ProductName Is System.String), True, False)"
-                },
-                new object []
-                {
+                ),
+                new IsofMethod_SucceedsTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName)),
                         typeof(Category).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.Category Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Category), True, False)"
-                },
-                new object []
-                {
+                ),
+                new IsofMethod_SucceedsTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName)),
                         typeof(DerivedCategory).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.Category Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.DerivedCategory), True, False)"
-                },
-                new object []
-                {
+                ),
+                new IsofMethod_SucceedsTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Ranking", new ParameterDescriptor(parameterName)),
                         typeof(SimpleEnum).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.Ranking Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum), True, False)"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(IsofMethod_Succeeds_Data))]
-        public void IsofMethod_Succeeds(DescriptorBase filterBody, string expectedExpression)
+        [MemberData(nameof(IsofMethod_Succeeds_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void IsofMethod_Succeeds(IsofMethod_SucceedsTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expectedExpression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> IsOfPrimitiveType_Succeeds_WithFalse_Data 
-            => new()
-            {
-                new object []
-                {
+        public class IsOfPrimitiveType_Succeeds_WithFalseTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<IsOfPrimitiveType_Succeeds_WithFalseTheoryData> IsOfPrimitiveType_Succeeds_WithFalse_Data
+            =>
+            [
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(byte[]).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(bool).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(byte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(DateTimeOffset).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Decimal).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(double).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(TimeSpan).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Guid).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Int16).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Int32).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Int64).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(sbyte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Single).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(System.IO.Stream).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(string).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(SimpleEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(FlagsEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayProp", new ParameterDescriptor(parameterName)),
                         typeof(byte[]).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("IntProp", new ParameterDescriptor(parameterName)),
                         typeof(SimpleEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("NullableShortProp", new ParameterDescriptor(parameterName)),
                         typeof(short).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(byte[]).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(bool).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(byte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(DateTimeOffset).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Decimal).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(double).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(TimeSpan).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Guid).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Int16).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Int32).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Int64).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(sbyte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(Single).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(System.IO.Stream).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(string).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(SimpleEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(FlagsEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(byte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(decimal).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(double).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(short).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(long).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(sbyte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(float).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("hello"),
                         typeof(Stream).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(0),
                         typeof(FlagsEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(0),
                         typeof(SimpleEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("2001-01-01T12:00:00.000+08:00"),
                         typeof(DateTimeOffset).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("00000000-0000-0000-0000-000000000000"),
                         typeof(Guid).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("23"),
                         typeof(byte).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("23"),
                         typeof(short).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("23"),
                         typeof(int).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("false"),
                         typeof(bool).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("OData"),
                         typeof(byte[]).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("PT12H'"),
                         typeof(TimeSpan).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
                         typeof(string).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("0"),
                         typeof(FlagsEnum).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("0"),
                         typeof(SimpleEnum).AssemblyQualifiedName
                     )
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(IsOfPrimitiveType_Succeeds_WithFalse_Data))]
-        public void IsOfPrimitiveType_Succeeds_WithFalse(DescriptorBase filterBody)
+        [MemberData(nameof(IsOfPrimitiveType_Succeeds_WithFalse_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void IsOfPrimitiveType_Succeeds_WithFalse(IsOfPrimitiveType_Succeeds_WithFalseTheoryData theoryData)
         {
             //arrange
             var model = new DataTypes();
@@ -6731,42 +6948,47 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> IsOfQuotedNonPrimitiveType 
-            => new()
-            {
-                new object []
-                {
+        public class IsOfQuotedNonPrimitiveTypeTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<IsOfQuotedNonPrimitiveTypeTheoryData> IsOfQuotedNonPrimitiveType
+            =>
+            [
+                new IsOfQuotedNonPrimitiveTypeTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
                         typeof(DerivedProduct).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfQuotedNonPrimitiveTypeTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("SupplierAddress", new ParameterDescriptor(parameterName)),
                         typeof(Address).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfQuotedNonPrimitiveTypeTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName)),
                         typeof(DerivedCategory).AssemblyQualifiedName
                     )
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(IsOfQuotedNonPrimitiveType))]
-        public void IsOfQuotedNonPrimitiveType_Succeeds(DescriptorBase filterBody)
+        [MemberData(nameof(IsOfQuotedNonPrimitiveType), MemberType = typeof(FilterDescriptorTests))]
+        public void IsOfQuotedNonPrimitiveType_Succeeds(IsOfQuotedNonPrimitiveTypeTheoryData theoryData)
         {
             //arrange
             var model = new DerivedProduct
@@ -6785,34 +7007,39 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse_Data 
-            => new()
-            {
-                new object []
-                {
+        public class IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalseTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalseTheoryData> IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse_Data
+            =>
+            [
+                new IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(Address).AssemblyQualifiedName
                     )
-                },
-                new object []
-                {
+                ),
+                new IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalseTheoryData
+                (
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
                         typeof(DerivedCategory).AssemblyQualifiedName
                     )
-                }
-            };
+                )
+            ];
 
         [Theory]
-        [MemberData(nameof(IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse_Data))]
-        public void IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse(DescriptorBase filterBody)
+        [MemberData(nameof(IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse(IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalseTheoryData theoryData)
         {
             //arrange
             var model = new DerivedProduct
@@ -6831,17 +7058,24 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
         #endregion 'isof' in query option
 
         #region
-        public static List<object[]> ByteArrayComparisons_Data 
-            => new()
-            {
-                new object []
-                {
+        public class ByteArrayComparisonsTheoryData(DescriptorBase filterBody, string expectedExpression, bool expectedResult)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+            public bool ExpectedResult { get; } = expectedResult;
+        }
+
+        public static TheoryData<ByteArrayComparisonsTheoryData> ByteArrayComparisons_Data
+            =>
+            [
+                new ByteArrayComparisonsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayProp", new ParameterDescriptor(parameterName)),
@@ -6849,9 +7083,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => ($it.ByteArrayProp == System.Byte[])",
                     true
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayProp", new ParameterDescriptor(parameterName)),
@@ -6859,9 +7093,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => ($it.ByteArrayProp != System.Byte[])",
                     false
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(Convert.FromBase64String("I6v/")),
@@ -6869,9 +7103,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => (System.Byte[] == System.Byte[])",
                     true
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(Convert.FromBase64String("I6v/")),
@@ -6879,9 +7113,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => (System.Byte[] != System.Byte[])",
                     false
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayPropWithNullValue", new ParameterDescriptor(parameterName)),
@@ -6889,9 +7123,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => ($it.ByteArrayPropWithNullValue != System.Byte[])",
                     true
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayPropWithNullValue", new ParameterDescriptor(parameterName)),
@@ -6899,9 +7133,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => ($it.ByteArrayPropWithNullValue != $it.ByteArrayPropWithNullValue)",
                     false
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayPropWithNullValue", new ParameterDescriptor(parameterName)),
@@ -6909,9 +7143,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => ($it.ByteArrayPropWithNullValue != null)",
                     false
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayPropWithNullValue", new ParameterDescriptor(parameterName)),
@@ -6919,9 +7153,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => ($it.ByteArrayPropWithNullValue == null)",
                     true
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new NotEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
@@ -6929,9 +7163,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => (null != $it.ByteArrayPropWithNullValue)",
                     false
-                },
-                new object []
-                {
+                ),
+                new ByteArrayComparisonsTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(null),
@@ -6939,12 +7173,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     "$it => (null == $it.ByteArrayPropWithNullValue)",
                     true
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(ByteArrayComparisons_Data))]
-        public void ByteArrayComparisons(DescriptorBase filterBody, string expectedExpression, bool expected)
+        [MemberData(nameof(ByteArrayComparisons_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void ByteArrayComparisons(ByteArrayComparisonsTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -6953,76 +7187,87 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 filter,
                 new DataTypes
                 {
-                    ByteArrayProp = new byte[] { 35, 171, 255 }
+                    ByteArrayProp = [35, 171, 255]
                 }
             );
 
             //assert
-            Assert.Equal(expected, result);
-            AssertFilterStringIsCorrect(filter, expectedExpression);
+            Assert.Equal(theoryData.ExpectedResult, result);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> DisAllowed_ByteArrayComparisons_Data 
-            => new()
-            {
-                new object []
-                {
+        public class DisAllowed_ByteArrayComparisonsTheoryData(DescriptorBase filterBody)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+        }
+
+        public static TheoryData<DisAllowed_ByteArrayComparisonsTheoryData> DisAllowed_ByteArrayComparisons_Data
+            =>
+            [
+                new DisAllowed_ByteArrayComparisonsTheoryData
+                (
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q")),
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q"))
                     )
-                },
-                new object []
-                {
+                ),
+                new DisAllowed_ByteArrayComparisonsTheoryData
+                (
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q")),
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q"))
                     )
-                },
-                new object []
-                {
+                ),
+                new DisAllowed_ByteArrayComparisonsTheoryData
+                (
                     new LessThanBinaryDescriptor
                     (
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q")),
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q"))
                     )
-                },
-                new object []
-                {
+                ),
+                new DisAllowed_ByteArrayComparisonsTheoryData
+                (
                     new GreaterThanBinaryDescriptor
                     (
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q")),
                         new ConstantDescriptor(Convert.FromBase64String("AP8Q"))
                     )
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(DisAllowed_ByteArrayComparisons_Data))]
-        public void DisAllowed_ByteArrayComparisons(DescriptorBase filterBody)
+        [MemberData(nameof(DisAllowed_ByteArrayComparisons_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void DisAllowed_ByteArrayComparisons(DisAllowed_ByteArrayComparisonsTheoryData theoryData)
         {
             //assert
-            Assert.Throws<InvalidOperationException>(() => CreateFilter<DataTypes>());
+            Assert.Throws<InvalidOperationException>(CreateFilter<DataTypes>);
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> Nullable_NonstandardEdmPrimitives_Data 
-            => new()
-            {
-                new object []
-                {
+        public class Nullable_NonstandardEdmPrimitivesTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<Nullable_NonstandardEdmPrimitivesTheoryData> Nullable_NonstandardEdmPrimitives_Data
+            =>
+            [
+                new Nullable_NonstandardEdmPrimitivesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertDescriptor
@@ -7036,9 +7281,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12)
                     ),
                     "$it => (Convert($it.NullableUShortProp.Value) == Convert(12))"
-                },
-                new object []
-                {
+                ),
+                new Nullable_NonstandardEdmPrimitivesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertDescriptor
@@ -7052,9 +7297,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12L)
                     ),
                     "$it => (Convert($it.NullableULongProp.Value) == Convert(12))"
-                },
-                new object []
-                {
+                ),
+                new Nullable_NonstandardEdmPrimitivesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertDescriptor
@@ -7068,9 +7313,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor(12)
                     ),
                     "$it => (Convert($it.NullableUIntProp.Value) == Convert(12))"
-                },
-                new object []
-                {
+                ),
+                new Nullable_NonstandardEdmPrimitivesTheoryData
+                (
                     new EqualsBinaryDescriptor
                     (
                         new ConvertToStringDescriptor
@@ -7083,32 +7328,38 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConstantDescriptor("a")
                     ),
                     "$it => ($it.NullableCharProp.Value.ToString() == \"a\")"
-                },
-            };
+                ),
+            ];
 
         [Theory]
-        [MemberData(nameof(Nullable_NonstandardEdmPrimitives_Data))]
-        public void Nullable_NonstandardEdmPrimitives(DescriptorBase filterBody, string expectedExpression)
+        [MemberData(nameof(Nullable_NonstandardEdmPrimitives_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void Nullable_NonstandardEdmPrimitives(Nullable_NonstandardEdmPrimitivesTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<DataTypes>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expectedExpression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
             Assert.Throws<InvalidOperationException>(() => RunFilter(filter, new DataTypes()));
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
-        public static List<object[]> InOnNavigation_Data 
-            => new()
-                {
-                    new object []
-                    {
+        public class InOnNavigationTheoryData(DescriptorBase filterBody, string expectedExpression)
+        {
+            public DescriptorBase FilterBody { get; } = filterBody;
+            public string ExpectedExpression { get; } = expectedExpression;
+        }
+
+        public static TheoryData<InOnNavigationTheoryData> InOnNavigation_Data
+            =>
+                [
+                    new InOnNavigationTheoryData
+                    (
                         new InDescriptor
                         (
                             new MemberSelectorDescriptor
@@ -7122,27 +7373,27 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             ),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ 1 },
+                                [1],
                                 typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Int32].Contains($it.Category.Product.ProductID)"
-                    },
-                    new object []
-                    {
+                    ),
+                    new InOnNavigationTheoryData
+                    (
                         new InDescriptor
                         (
                             new MemberSelectorDescriptor("Category.Product.ProductID", new ParameterDescriptor(parameterName)),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ 1 },
+                                [1],
                                 typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Int32].Contains($it.Category.Product.ProductID)"
-                    },
-                    new object []
-                    {
+                    ),
+                    new InOnNavigationTheoryData
+                    (
                         new InDescriptor
                         (
                             new MemberSelectorDescriptor
@@ -7156,14 +7407,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             ),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
+                                [new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7")],
                                 typeof(Guid).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Guid].Contains($it.Category.Product.GuidProperty)"
-                    },
-                    new object []
-                    {
+                    ),
+                    new InOnNavigationTheoryData
+                    (
                         new InDescriptor
                         (
                             new MemberSelectorDescriptor
@@ -7177,28 +7428,28 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             ),
                             new CollectionConstantDescriptor
                             (
-                                new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
+                                [new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7")],
                                 typeof(Guid?).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Nullable`1[System.Guid]].Contains($it.Category.Product.NullableGuidProperty)"
-                    }
-                };
+                    )
+                ];
 
         [Theory]
-        [MemberData(nameof(InOnNavigation_Data))]
-        public void InOnNavigation(DescriptorBase filterBody, string expectedExpression)
+        [MemberData(nameof(InOnNavigation_Data), MemberType = typeof(FilterDescriptorTests))]
+        public void InOnNavigation(InOnNavigationTheoryData theoryData)
         {
             //act
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, expectedExpression);
+            AssertFilterStringIsCorrect(filter, theoryData.ExpectedExpression);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
                 (
-                    filterBody
+                    theoryData.FilterBody
                 );
         }
 
@@ -7333,11 +7584,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 .BuildServiceProvider();
         }
 
-        //private string PadRightInstance(string str, int number)
-        //{
-        //    return str.PadRight(number);
-        //}
-
         // Used by Custom Method binder tests - by reflection
         private static string PadRightStatic(string str, int number)
         {
@@ -7347,8 +7593,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         private static T? ToNullable<T>(object value) where T : struct =>
             value == null ? null : (T?)Convert.ChangeType(value, typeof(T));
 
-        private static IDictionary<string, ParameterExpression> GetParameters()
-            => new Dictionary<string, ParameterExpression>();
+        private static Dictionary<string, ParameterExpression> GetParameters()
+            => [];
 
         private static void AssertFilterStringIsCorrect(Expression expression, string expected)
         {
@@ -7364,8 +7610,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             (
                 new FilterLambdaDescriptor
                 (
-                    filterBody, 
-                    typeof(T).AssemblyQualifiedName, 
+                    filterBody,
+                    typeof(T).AssemblyQualifiedName,
                     parameterName
                 ),
                 opts => opts.Items["parameters"] = GetParameters()
@@ -7374,13 +7620,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         private static bool RunFilter<TModel>(Expression<Func<TModel, bool>> filter, TModel instance)
             => filter.Compile().Invoke(instance);
-    }
+            }
 
-    public static class StringExtender
-    {
-        public static string PadRightExStatic(this string str, int width)
+            public static class StringExtender
         {
-            return str.PadRight(width);
+            public static string PadRightExStatic(this string str, int width)
+            {
+                return str.PadRight(width);
+            }
         }
-    }
 }

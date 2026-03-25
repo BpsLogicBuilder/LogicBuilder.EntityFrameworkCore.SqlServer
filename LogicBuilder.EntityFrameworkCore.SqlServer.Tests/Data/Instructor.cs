@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
-namespace Contoso.Data.Entities
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data
 {
     [Table("Instructor")]
     public class Instructor : BaseDataClass

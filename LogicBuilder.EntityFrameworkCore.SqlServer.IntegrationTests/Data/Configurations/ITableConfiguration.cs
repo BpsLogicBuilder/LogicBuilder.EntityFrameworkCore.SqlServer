@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Contoso.Contexts.Configuations
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Configurations
 {
     interface ITableConfiguration
     {
