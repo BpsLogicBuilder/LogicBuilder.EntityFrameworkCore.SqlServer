@@ -1,7 +1,6 @@
-﻿using Contoso.Contexts;
-using LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores;
+﻿using LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores;
 
-namespace Contoso.Stores
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores
 {
     public class SchoolStore : StoreBase, ISchoolStore
     {

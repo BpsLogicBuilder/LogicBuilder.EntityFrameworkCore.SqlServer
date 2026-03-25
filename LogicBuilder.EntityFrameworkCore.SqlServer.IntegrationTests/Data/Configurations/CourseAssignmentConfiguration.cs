@@ -1,7 +1,6 @@
-﻿using Contoso.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace Contoso.Contexts.Configuations
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Configurations
 {
     class CourseAssignmentConfiguration : ITableConfiguration
     {

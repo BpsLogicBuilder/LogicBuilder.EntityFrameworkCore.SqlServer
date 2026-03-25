@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
-using Contoso.Data.Entities;
-using Contoso.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.AutoMapperProfiles
 {
@@ -41,7 +36,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.AutoMapper
                 .ReverseMap()
                 .ForMember(dest => dest.CourseTitle, opts => opts.MapFrom(x => x.Course.Title))
                 .ForMember(dest => dest.StudentName, opts => opts.MapFrom(x => x.Student.FirstName + " " + x.Student.LastName))
-                .ForMember(dest => dest.Grade, opts => opts.MapFrom(x => x.Grade.HasValue ? (Contoso.Domain.Entities.Grade?)(int)x.Grade.Value : null))
+                .ForMember(dest => dest.Grade, opts => opts.MapFrom(x => x.Grade.HasValue ? (Models.Grade?)(int)x.Grade.Value : null))
                 .ForMember(dest => dest.GradeLetter, opts => opts.MapFrom(x => x.Grade.ToString()))
                 .ForAllMembers(o => o.ExplicitExpansion());
 

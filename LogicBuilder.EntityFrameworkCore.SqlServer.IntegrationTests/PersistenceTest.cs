@@ -1,15 +1,13 @@
 using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
-using Contoso.Contexts;
-using Contoso.Data.Entities;
-using Contoso.Domain.Entities;
-using Contoso.Repositories;
-using Contoso.Stores;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.AutoMapperProfiles;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,32 +26,31 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
         #endregion Fields
 
         [Fact]
-        public void SaveDepartmentSpecifyingRowVersionExpansion()
+        public async Task SaveDepartmentSpecifyingRowVersionExpansion()
         {
             //arrange
             ISchoolRepository schoolRepository = serviceProvider.GetRequiredService<ISchoolRepository>();
-            var department = schoolRepository.GetAsync<DepartmentModel, Department>
+            var department = (await schoolRepository.GetAsync<DepartmentModel, Department>
             (
                 s => s.Name == "Mathematics",
-                selectExpandDefinition: new LogicBuilder.Expressions.Utils.Expansions.SelectExpandDefinition
+                selectExpandDefinition: new Expressions.Utils.Expansions.SelectExpandDefinition
                 (
                     [],
                     [//Need expansion because RowVersion is not a literal type (included without explicit expansion)
-                     //Or use GetItemsAsync which does not use projection.
-                     //Todo include check for typeof(byte[]) in LogicBuilder.Expressions.Utils.TypeExtension.GetValueTypeMembers()
                         new("RowVersion")
                     ]
                 )
-            ).Result.Single();
+            )).Single();
+
             department.Budget = 1000.1m;
-            department.EntityState = LogicBuilder.Domain.EntityStateType.Modified;
+            department.EntityState = Domain.EntityStateType.Modified;
 
             //act
-            bool result = schoolRepository.SaveAsync<DepartmentModel, Department>(department).Result;
-            var savedDepartment = schoolRepository.GetAsync<DepartmentModel, Department>
+            bool result = await schoolRepository.SaveAsync<DepartmentModel, Department>(department);
+            var savedDepartment = (await schoolRepository.GetAsync<DepartmentModel, Department>
             (
                 s => s.Name == "Mathematics"
-            ).Result.Single();
+            )).Single();
 
             //assert
             Assert.True(result);
@@ -61,30 +58,22 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
         }
 
         [Fact]
-        public void SaveDepartmentWithoutSpecifyingRowVersionExpansion()
+        public async Task SaveDepartmentWithoutSpecifyingRowVersionExpansion()
         {
             //arrange
             ISchoolRepository schoolRepository = serviceProvider.GetRequiredService<ISchoolRepository>();
-            var department = schoolRepository.GetAsync<DepartmentModel, Department>
+            var department = (await schoolRepository.GetAsync<DepartmentModel, Department>
             (
                 s => s.Name == "Mathematics"
-            ).Result.Single();
+            )).Single();
             department.Budget = 1000.1m;
             department.EntityState = LogicBuilder.Domain.EntityStateType.Modified;
 
-            //act
-            //Assert.Throws<AggregateException>
-            //(
-            //    () =>
-            //    {
-            //        bool result = schoolRepository.SaveAsync<DepartmentModel, Department>(department).Result;
-            //    }
-            //);
-            bool result = schoolRepository.SaveAsync<DepartmentModel, Department>(department).Result;
-            var savedDepartment = schoolRepository.GetAsync<DepartmentModel, Department>
+            bool result = await schoolRepository.SaveAsync<DepartmentModel, Department>(department);
+            var savedDepartment = (await schoolRepository.GetAsync<DepartmentModel, Department>
             (
                 s => s.Name == "Mathematics"
-            ).Result.Single();
+            )).Single();
 
             //assert
             Assert.True(result);
@@ -92,32 +81,33 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
         }
 
         [Fact]
-        public void CanUpdateAnObjectThenDeleteIt()
+        public async Task CanUpdateAnObjectThenDeleteIt()
         {
             ISchoolRepository schoolRepository = serviceProvider.GetRequiredService<ISchoolRepository>();
-            var student = schoolRepository.GetAsync<StudentModel, Student>
+            var student = (await schoolRepository.GetAsync<StudentModel, Student>
             (
                 s => s.FullName == "Carson Alexander"
-            ).Result.Single();
+            )).Single();
             int id = student.ID;
             student.FirstName = "First";
             student.EntityState = LogicBuilder.Domain.EntityStateType.Modified;
 
-            bool success = schoolRepository.SaveGraphAsync<StudentModel, Student>(student).Result;
-            var student2 = schoolRepository.GetAsync<StudentModel, Student>
+            bool success = await schoolRepository.SaveGraphAsync<StudentModel, Student>(student);
+            var student2 = (await schoolRepository.GetAsync<StudentModel, Student>
             (
                 f => f.ID == id
-            ).Result.SingleOrDefault();
+            )).SingleOrDefault();
 
             Assert.Equal("First", student2.FirstName);
             Assert.True(success);
             student2.EntityState = LogicBuilder.Domain.EntityStateType.Deleted;
 
-            success = schoolRepository.SaveGraphAsync<StudentModel, Student>(student2).Result;
-            var student3 = schoolRepository.GetAsync<StudentModel, Student>
+            success = await schoolRepository.SaveGraphAsync<StudentModel, Student>(student2);
+            var student3 = (await schoolRepository.GetAsync<StudentModel, Student>
             (
                 f => f.ID == id
-            ).Result.SingleOrDefault();
+            )).SingleOrDefault();
+            Assert.True(success);
             Assert.Null(student3);
         }
 
@@ -176,7 +166,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
                 )
             )).First();
 
-            Assert.Null(instructor.OfficeAssignment);
+            Assert.Null(instructor3.OfficeAssignment);
             Assert.True(success);
         }
 

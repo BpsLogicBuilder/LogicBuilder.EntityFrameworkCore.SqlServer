@@ -1,4 +1,4 @@
-﻿namespace Contoso.Domain.Entities
+﻿namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
 {
     public enum Grade
     {

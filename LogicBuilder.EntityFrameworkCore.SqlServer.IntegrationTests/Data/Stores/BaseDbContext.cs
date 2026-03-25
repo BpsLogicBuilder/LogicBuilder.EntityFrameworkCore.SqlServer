@@ -1,13 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Contoso.Contexts
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores
 {
     public abstract class BaseDbContext : DbContext
     {
-        public BaseDbContext(DbContextOptions options) : base(options)
+        protected BaseDbContext(DbContextOptions options) : base(options)
         {
             this.EntityConfigurationHandler = new EntityConfigurationHandler(this);
         }

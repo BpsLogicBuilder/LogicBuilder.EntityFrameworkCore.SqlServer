@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace Contoso.Domain.Entities
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
 {
     public class OfficeAssignmentModel : BaseModelClass
     {
@@ -10,8 +10,5 @@ namespace Contoso.Domain.Entities
 		[StringLength(50)]
 		[Display(Name = "Office Location")]
 		public string Location { get; set; }
-
-		//[AlsoKnownAs("OfficeAssignment.Instructor")]
-		//public InstructorModel Instructor { get; set; }
     }
 }

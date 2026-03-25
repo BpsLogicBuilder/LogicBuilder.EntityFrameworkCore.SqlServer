@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Contoso.Stores;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores;
 using LogicBuilder.EntityFrameworkCore.SqlServer.Repositories;
 
-namespace Contoso.Repositories
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models.Repositories
 {
     public class SchoolRepository : ContextRepositoryBase, ISchoolRepository
     {

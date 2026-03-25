@@ -32,13 +32,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             var descriptor = new ConcatDescriptor
             (
                 new MemberSelectorDescriptor("AlternateAddresses", new ParameterDescriptor(parameterName)),
-                new ConstantDescriptor(new Address[] { new Address { City = "Seattle" }, new Address { City = "Portland" } })
+                new ConstantDescriptor(new Address[] { new() { City = "Seattle" }, new() { City = "Portland" } })
             );
             var expression = GetExpression<Product, IEnumerable<Address>>(descriptor);
             var result = RunExpression
             (
                 expression,
-                new Product { AlternateAddresses = new[] { new Address { City = "Redmond" }, new Address { City = "Seattle" } } }
+                new Product { AlternateAddresses = [new Address { City = "Redmond" }, new Address { City = "Seattle" }] }
             );
 
             AssertExpressionStringIsCorrect(expression, "$it => $it.AlternateAddresses.Concat(LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Address[])");
@@ -52,13 +52,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             var descriptor = new ExceptDescriptor
             (
                 new MemberSelectorDescriptor("AlternateAddresses", new ParameterDescriptor(parameterName)),
-                new ConstantDescriptor(new Address[] { new Address { City = "Seattle" }, new Address { City = "Portland" } })
+                new ConstantDescriptor(new Address[] { new() { City = "Seattle" }, new() { City = "Portland" } })
             );
             var expression = GetExpression<Product, IEnumerable<Address>>(descriptor);
             var result = RunExpression
             (
                 expression,
-                new Product { AlternateAddresses = new[] { new Address { City = "Redmond" }, new Address { City = "Seattle" } } }
+                new Product { AlternateAddresses = [new Address { City = "Redmond" }, new Address { City = "Seattle" }] }
             );
 
             AssertExpressionStringIsCorrect(expression, "$it => $it.AlternateAddresses.Except(LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Address[])");
@@ -73,13 +73,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             var descriptor = new UnionDescriptor
             (
                 new MemberSelectorDescriptor("AlternateAddresses", new ParameterDescriptor(parameterName)),
-                new ConstantDescriptor(new Address[] { new Address { City = "Seattle" }, new Address { City = "Portland" } })
+                new ConstantDescriptor(new Address[] { new() { City = "Seattle" }, new() { City = "Portland" } })
             );
             var expression = GetExpression<Product, IEnumerable<Address>>(descriptor);
             var result = RunExpression
             (
                 expression,
-                new Product { AlternateAddresses = new[] { new Address { City = "Redmond" }, new Address { City = "Seattle" } } }
+                new Product { AlternateAddresses = [new Address { City = "Redmond" }, new Address { City = "Seattle" }] }
             );
 
             AssertExpressionStringIsCorrect(expression, "$it => $it.AlternateAddresses.Union(LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Address[])");
@@ -104,8 +104,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 .BuildServiceProvider();
         }
 
-        private static IDictionary<string, ParameterExpression> GetParameters()
-            => new Dictionary<string, ParameterExpression>();
+        private static Dictionary<string, ParameterExpression> GetParameters()
+            => [];
 
         private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string parameterName = "$it")
         {

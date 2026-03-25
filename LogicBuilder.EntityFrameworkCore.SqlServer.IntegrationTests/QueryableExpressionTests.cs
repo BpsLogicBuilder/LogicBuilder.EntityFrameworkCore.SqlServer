@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
-using Contoso.Contexts;
-using Contoso.Data.Entities;
-using Contoso.Domain.Entities;
-using Contoso.Repositories;
-using Contoso.Stores;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.AutoMapperProfiles;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models.Repositories;
 using LogicBuilder.Expressions.Utils.ExpressionBuilder.Lambda;
 using LogicBuilder.Expressions.Utils.ExpressionDescriptors;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
@@ -26,22 +27,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
         }
 
         [Fact]
-        public void Select_Group_Students_By_EnrollmentDate_Return_EnrollmentDate_With_Count()
+        public async Task Select_Group_Students_By_EnrollmentDate_Return_EnrollmentDate_With_Count()
         {
-            //arrange
-            //Expression<Func<IQueryable<StudentModel>, IQueryable<LookUpsModel>>> expression1 =
-            //    q => q.GroupBy(item => item.EnrollmentDate)
-            //    .OrderBy(group => group.Key)
-            //    .Select
-            //    (
-            //        sel => new LookUpsModel
-            //        {
-            //            DateTimeValue = sel.Key,
-            //            NumericValue = sel.Count()
-            //        }
-            //    );
-
-
             //arrange
             var selectorLambdaOperatorDescriptor = GetExpressionDescriptor<IQueryable<StudentModel>, IQueryable<LookUpsModel>>
             (
@@ -51,7 +38,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             var expression = GetExpression<IQueryable<StudentModel>, IQueryable<LookUpsModel>>(selectorLambdaOperatorDescriptor);
 
             //act
-            var result = serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<StudentModel, Student, IQueryable<LookUpsModel>, IQueryable<LookUps>>(expression).Result.ToList();
+            IQueryable<LookUpsModel> queryableResult = await serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<StudentModel, Student, IQueryable<LookUpsModel>, IQueryable<LookUps>>(expression);
+            var result = await queryableResult.ToListAsync(CancellationToken.None);
 
             //assert
             AssertFilterStringIsCorrect(expression, "q => q.GroupBy(item => item.EnrollmentDate).OrderByDescending(group => group.Key).Select(sel => new LookUpsModel() {DateTimeValue = sel.Key, NumericValue = Convert(sel.AsQueryable().Count())})");

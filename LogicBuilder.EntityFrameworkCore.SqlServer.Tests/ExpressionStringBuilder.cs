@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 {
-    public class ExpressionStringBuilder : ExpressionVisitor
+    public partial class ExpressionStringBuilder : ExpressionVisitor
     {
         private readonly StringBuilder _builder = new();
 
@@ -141,22 +141,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         protected override Expression VisitNew(NewExpression node)
         {
             Out("new " + GetTypeName() + "(");
-            VisitArguments(node.Arguments.ToArray());
+            VisitArguments([.. node.Arguments]);
             Out(")");
             return node;
 
             string GetTypeName()
-                => Regex.IsMatch(node.Type.Name, @"^AnonymousType[\d]+$") ? "AnonymousType" : node.Type.Name;
-        }
-
-        protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
-        {
-            return base.VisitMemberListBinding(node);
-        }
-
-        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
-        {
-            return base.VisitMemberMemberBinding(node);
+                => AnonymousTypeRegex().IsMatch(node.Type.Name) ? "AnonymousType" : node.Type.Name;
         }
 
         protected override Expression VisitMemberInit(MemberInitExpression node)
@@ -192,7 +182,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             }
 
             Out("." + node.Method.Name + "(");
-            VisitArguments(arguments.ToArray());
+            VisitArguments([.. arguments]);
             Out(")");
             return node;
         }
@@ -266,5 +256,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         {
             _builder.Append(s);
         }
+
+        [GeneratedRegex(@"^AnonymousType[\d]+$")]
+        private static partial Regex AnonymousTypeRegex();
     }
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace Contoso.Domain.Entities
+namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
 {
     public class CourseModel : BaseModelClass
     {
@@ -18,11 +18,6 @@ namespace Contoso.Domain.Entities
 		public int DepartmentID { get; set; }
 
         public string DepartmentName { get; set; }
-        //[AlsoKnownAs("Course.Department")]
-        //public DepartmentModel Department { get; set; }
-
-        //[AlsoKnownAs("Course.Enrollments")]
-        //public ICollection<EnrollmentModel> Enrollments { get; set; }
 
 		public ICollection<CourseAssignmentModel> Assignments { get; set; }
     }
