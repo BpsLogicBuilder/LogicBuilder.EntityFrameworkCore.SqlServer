@@ -1,3 +1,4 @@
+* 2026-03-25 - AB#97: Update NuGet.org package source configuration.
 * 2026-03-25 - AB#97: Explicitly adding NuGet.org as package source.
 * 2026-03-25 - AB#97: Update NuGet source config in CI workflow.
 * 2026-03-25 - AB#97: Refactor dotnet nuget add source command in ci.yml.
