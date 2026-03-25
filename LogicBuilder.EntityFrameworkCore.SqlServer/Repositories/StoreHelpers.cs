@@ -213,23 +213,25 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                             list = list.ConvertAll
                             (
                                 exp => new ExpansionOptions
-                                {
-                                    MemberName = exp.MemberName,
-                                    MemberType = exp.MemberType,
-                                    ParentType = exp.ParentType,
-                                }
+                                (
+                                    exp.MemberName,
+                                    exp.MemberType,
+                                    exp.ParentType,
+                                    []
+                                )
                             );//new list removing filter
 
                             list.Add
                             (
                                 new ExpansionOptions
-                                {
-                                    MemberName = next.MemberName,
-                                    MemberType = next.MemberType,
-                                    ParentType = next.ParentType,
-                                    FilterOption = new ExpansionFilterOption { FilterLambdaOperator = next.FilterOption.FilterLambdaOperator }
-                                    //FilterOption = new ExpansionFilterOption { Filter = next.FilterOption.Filter }
-                                }
+                                (
+                                    next.MemberName,
+                                    next.MemberType,
+                                    next.ParentType,
+                                    [],
+                                    null,
+                                    new ExpansionFilterOption(next.FilterOption.FilterLambdaOperator)
+                                )
                             );//add expansion with filter
 
                             listOfLists.Add(list.ToList()); //Add the whole list to the list of filter lists
@@ -256,23 +258,24 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                             list = list.ConvertAll
                             (
                                 exp => new ExpansionOptions
-                                {
-                                    MemberName = exp.MemberName,
-                                    MemberType = exp.MemberType,
-                                    ParentType = exp.ParentType,
-                                }
+                                (
+                                    exp.MemberName,
+                                    exp.MemberType,
+                                    exp.ParentType,
+                                    []
+                                )
                             );//new list removing query options
 
                             list.Add
                             (
                                 new ExpansionOptions
-                                {
-                                    MemberName = next.MemberName,
-                                    MemberType = next.MemberType,
-                                    ParentType = next.ParentType,
-                                    QueryOption = new ExpansionQueryOption { SortCollection = next.QueryOption.SortCollection }
-                                    //QueryOption = new ExpansionQueryOption { QueryFunction = next.QueryOption.QueryFunction }
-                                }
+                                (
+                                    next.MemberName,
+                                    next.MemberType,
+                                    next.ParentType,
+                                    [],
+                                    new ExpansionQueryOption(next.QueryOption.SortCollection)
+                                )
                             );//add expansion with query options
 
                             listOfLists.Add(list.ToList()); //Add the whole list to the list of query method lists

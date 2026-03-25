@@ -75,7 +75,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor("Doritos", typeof(string))
+                        new ConstantDescriptor("Doritos", typeof(string).AssemblyQualifiedName)
                     )
                 );
         }
@@ -100,7 +100,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new NotEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor("Doritos", typeof(string))
+                        new ConstantDescriptor("Doritos", typeof(string).AssemblyQualifiedName)
                     )
                 );
         }
@@ -125,7 +125,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new GreaterThanBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -150,7 +150,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new GreaterThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -175,7 +175,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new LessThanBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -200,7 +200,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -222,7 +222,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new LessThanOrEqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(-5.00m, typeof(decimal))
+                        new ConstantDescriptor(-5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -270,7 +270,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateTimeOffsetInequalities_Data))]
-        public void DateTimeOffsetInequalities(IExpressionDescriptor filterBody, string expectedExpression)
+        public void DateTimeOffsetInequalities(DescriptorBase filterBody, string expectedExpression)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -330,7 +330,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateInEqualities_Data))]
-        public void DateInEqualities(IExpressionDescriptor filterBody, string expectedExpression)
+        public void DateInEqualities(DescriptorBase filterBody, string expectedExpression)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -366,12 +366,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new EqualsBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(5.00m, typeof(decimal))
+                            new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
                         new EqualsBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("CategoryID", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(0, typeof(int))
+                            new ConstantDescriptor(0, typeof(int).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -392,7 +392,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new EqualsBinaryDescriptor
                     (
                         new MemberSelectorDescriptor("Discontinued", new ParameterDescriptor(parameterName)),
-                        new ConstantDescriptor(true, typeof(bool))
+                        new ConstantDescriptor(true, typeof(bool).AssemblyQualifiedName)
                     )
                 );
         }
@@ -439,12 +439,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new EqualsBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(5.00m, typeof(decimal))
+                            new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
                         new EqualsBinaryDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)), typeof(int?)),
-                            new ConstantDescriptor(0, typeof(int))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)), typeof(int?).AssemblyQualifiedName),
+                            new ConstantDescriptor(0, typeof(int).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -472,12 +472,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new EqualsBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(5.00m, typeof(decimal))
+                            new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
                         new EqualsBinaryDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)), typeof(decimal?)),
-                            new ConstantDescriptor(10.00m, typeof(decimal))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("UnitsInStock", new ParameterDescriptor(parameterName)), typeof(decimal?).AssemblyQualifiedName),
+                            new ConstantDescriptor(10.00m, typeof(decimal).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -505,7 +505,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new EqualsBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(5.00m, typeof(decimal))
+                            new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -583,9 +583,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new SubtractBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(1.00m, typeof(decimal))
+                            new ConstantDescriptor(1.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -607,9 +607,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new AddBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(1.00m, typeof(decimal))
+                            new ConstantDescriptor(1.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -631,9 +631,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new MultiplyBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(1.00m, typeof(decimal))
+                            new ConstantDescriptor(1.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -655,9 +655,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new DivideBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(1.00m, typeof(decimal))
+                            new ConstantDescriptor(1.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -679,9 +679,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ModuloBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(1.00m, typeof(decimal))
+                            new ConstantDescriptor(1.00m, typeof(decimal).AssemblyQualifiedName)
                         ),
-                        new ConstantDescriptor(5.00m, typeof(decimal))
+                        new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                     )
                 );
         }
@@ -860,7 +860,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(NullHandling_Data))]
-        public void NullHandling(IExpressionDescriptor filterBody, object unitsInStock, object unitsOnOrder, bool expected)
+        public void NullHandling(DescriptorBase filterBody, object unitsInStock, object unitsOnOrder, bool expected)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -903,7 +903,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(NullHandling_LiteralNull_Data))]
-        public void NullHandling_LiteralNull(IExpressionDescriptor filterBody, object unitsInStock, bool expected)
+        public void NullHandling_LiteralNull(DescriptorBase filterBody, object unitsInStock, bool expected)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -936,7 +936,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
                         (
                             new MemberSelectorDescriptor("UIntProp", new ParameterDescriptor(parameterName)),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         )
                     )
                 },
@@ -952,7 +952,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("ULongProp", new ParameterDescriptor(parameterName)),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         )
                     )
                 },
@@ -968,7 +968,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("UShortProp", new ParameterDescriptor(parameterName)),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         )
                     )
                 },
@@ -984,7 +984,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("NullableUShortProp", new ParameterDescriptor(parameterName)),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         )
                     )
                 },
@@ -1000,7 +1000,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("NullableUIntProp", new ParameterDescriptor(parameterName)),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         )
                     )
                 },
@@ -1016,7 +1016,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("NullableULongProp", new ParameterDescriptor(parameterName)),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         )
                     )
                 }
@@ -1024,7 +1024,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(ComparisonsInvolvingCastsAndNullableValues_Data))]
-        public void ComparisonsInvolvingCastsAndNullableValues(IExpressionDescriptor filterBody)
+        public void ComparisonsInvolvingCastsAndNullableValues(DescriptorBase filterBody)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -1066,7 +1066,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new LessThanBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("UnitPrice", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor(5.00m, typeof(decimal))
+                            new ConstantDescriptor(5.00m, typeof(decimal).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -1303,7 +1303,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ 1 },
-                                typeof(int)
+                                typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1325,7 +1325,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ 1 },
-                                typeof(int)
+                                typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1347,7 +1347,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
-                                typeof(Guid)
+                                typeof(Guid).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1369,7 +1369,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
-                                typeof(Guid)
+                                typeof(Guid).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1391,7 +1391,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
-                                typeof(Guid?)
+                                typeof(Guid?).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1413,7 +1413,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
-                                typeof(Guid?)
+                                typeof(Guid?).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1435,7 +1435,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ false, null },
-                                typeof(bool?)
+                                typeof(bool?).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1457,7 +1457,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ false, null },
-                                typeof(bool?)
+                                typeof(bool?).AssemblyQualifiedName
                             )
                         ),
                         "P"
@@ -1468,7 +1468,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(AnyInOnNavigation_Data))]
-        public void AnyInOnNavigation(IExpressionDescriptor filterBody, string expression)
+        public void AnyInOnNavigation(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -1538,7 +1538,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(AnyOnNavigation_Contradiction_Data))]
-        public void AnyOnNavigation_Contradiction(IExpressionDescriptor filterBody, string expression)
+        public void AnyOnNavigation_Contradiction(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -2963,7 +2963,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateTimeOffsetFunctions_Data))]
-        public void DateTimeOffsetFunctions(IExpressionDescriptor filterBody, string expression)
+        public void DateTimeOffsetFunctions(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3057,7 +3057,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateTimeFunctions_Data))]
-        public void DateTimeFunctions(IExpressionDescriptor filterBody, string expression)
+        public void DateTimeFunctions(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3115,7 +3115,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateFunctions_Nullable_Data))]
-        public void DateFunctions_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void DateFunctions_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3173,7 +3173,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateOnlyFunctions_Nullable_Data))]
-        public void DateOnlyFunctions_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void DateOnlyFunctions_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3231,7 +3231,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateFunctions_NonNullable_Data))]
-        public void DateFunctions_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void DateFunctions_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3289,7 +3289,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateOnlyFunctions_NonNullable_Data))]
-        public void DateOnlyFunctions_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void DateOnlyFunctions_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3347,7 +3347,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeOfDayFunctions_Nullable_Data))]
-        public void TimeOfDayFunctions_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeOfDayFunctions_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3405,7 +3405,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeOnlyFunctions_Nullable_Data))]
-        public void TimeOnlyFunctions_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeOnlyFunctions_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3463,7 +3463,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeOfDayFunctions_NonNullable_Data))]
-        public void TimeOfDayFunctions_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeOfDayFunctions_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3521,7 +3521,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeOnlyFunctions_NonNullable_Data))]
-        public void TimeOnlyFunctions_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeOnlyFunctions_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3579,7 +3579,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(FractionalsecondsFunction_Nullable_Data))]
-        public void FractionalsecondsFunction_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void FractionalsecondsFunction_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3637,7 +3637,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(FractionalsecondsFunction_NonNullable_Data))]
-        public void FractionalsecondsFunction_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void FractionalsecondsFunction_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3722,7 +3722,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateFunction_Nullable_Data))]
-        public void DateFunction_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void DateFunction_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3807,7 +3807,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateOnlyFunction_Nullable_Data))]
-        public void DateOnlyFunction_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void DateOnlyFunction_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3874,7 +3874,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateFunction_NonNullable_Data))]
-        public void DateFunction_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void DateFunction_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -3941,7 +3941,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateOnlyFunction_NonNullable_Data))]
-        public void DateOnlyFunction_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void DateOnlyFunction_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -4026,7 +4026,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeFunction_Nullable_Data))]
-        public void TimeFunction_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeFunction_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -4111,7 +4111,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeOnlyFunction_Nullable_Data))]
-        public void TimeOnlyFunction_Nullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeOnlyFunction_Nullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -4178,7 +4178,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeFunction_NonNullable_Data))]
-        public void TimeFunction_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeFunction_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -4245,7 +4245,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(TimeOnlyFunction_NonNullable_Data))]
-        public void TimeOnlyFunction_NonNullable(IExpressionDescriptor filterBody, string expression)
+        public void TimeOnlyFunction_NonNullable(DescriptorBase filterBody, string expression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -4441,7 +4441,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new RoundDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor(5d)
                     )
@@ -4468,7 +4468,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new RoundDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor(5d)
                     )
@@ -4599,7 +4599,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new FloorDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor(5d)
                     )
@@ -4626,7 +4626,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new FloorDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor(5d)
                     )
@@ -4757,7 +4757,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new CeilingDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor(5d)
                     )
@@ -4784,7 +4784,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new CeilingDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("Width", new ParameterDescriptor(parameterName)), typeof(double?).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor(5d)
                     )
@@ -4800,11 +4800,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new FloorDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         ),
                         new FloorDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         )
                     )
                 },
@@ -4814,11 +4814,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new RoundDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         ),
                         new RoundDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         )
                     )
                 },
@@ -4828,11 +4828,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new CeilingDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         ),
                         new CeilingDescriptor
                         (
-                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double))
+                            new ConvertDescriptor(new MemberSelectorDescriptor("FloatProp", new ParameterDescriptor(parameterName)), typeof(double).AssemblyQualifiedName)
                         )
                     )
                 },
@@ -4924,7 +4924,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(MathFunctions_VariousTypes_Data))]
-        public void MathFunctions_VariousTypes(IExpressionDescriptor filterBody)
+        public void MathFunctions_VariousTypes(DescriptorBase filterBody)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -4964,8 +4964,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new CustomMethodDescriptor
                         (
-                            typeof(string).GetMethod("PadRight", new Type[] { typeof(int) }),
-                            new IExpressionDescriptor[]
+                            typeof(string).AssemblyQualifiedName,
+                            "PadRight",
+                            [typeof(int).AssemblyQualifiedName],
+                            new DescriptorBase[]
                             {
                                 new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
                                 new ConstantDescriptor(totalWidth)
@@ -4998,8 +5000,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new CustomMethodDescriptor
                         (
-                            typeof(StringExtender).GetMethod("PadRightExStatic", BindingFlags.Public | BindingFlags.Static),
-                            new IExpressionDescriptor[]
+                            typeof(StringExtender).AssemblyQualifiedName,
+                            "PadRightExStatic",
+                            [typeof(string).AssemblyQualifiedName, typeof(int).AssemblyQualifiedName],
+                            new DescriptorBase[]
                             {
                                 new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
                                 new ConstantDescriptor(totalWidth)
@@ -5011,7 +5015,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         }
 
         [Fact]
-        public void CustomMethod_StaticMethodNotOfDeclaringType()
+        public void CustomMethod_StaticMethoOfDeclaringType()
         {
             //arrange
             const string productName = "Abcd";
@@ -5032,8 +5036,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new CustomMethodDescriptor
                         (
-                            typeof(FilterDescriptorTests).GetMethod(nameof(PadRightStatic), BindingFlags.NonPublic | BindingFlags.Static),
-                            new IExpressionDescriptor[]
+                            typeof(FilterDescriptorTests).AssemblyQualifiedName,
+                            nameof(PadRightStatic),
+                            [typeof(string).AssemblyQualifiedName, typeof(int).AssemblyQualifiedName],
+                            new DescriptorBase[]
                             {
                                 new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
                                 new ConstantDescriptor(totalWidth)
@@ -5103,7 +5109,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DateTimeExpression_Data))]
-        public void DateTimeExpression(IExpressionDescriptor filterBody, string expectedExpression)
+        public void DateTimeExpression(DescriptorBase filterBody, string expectedExpression)
         {
             //arrange
             var dateTime = new DateTimeOffset(new DateTime(2000, 12, 12, 12, 0, 0), TimeSpan.Zero);
@@ -5140,12 +5146,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new LessThanBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("LongProp", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor((long)987654321, typeof(long))
+                            new ConstantDescriptor((long)987654321, typeof(long).AssemblyQualifiedName)
                         ),
                         new GreaterThanBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("LongProp", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor((long)123456789, typeof(long))
+                            new ConstantDescriptor((long)123456789, typeof(long).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -5158,12 +5164,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new LessThanBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("LongProp", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor((long)-987654321, typeof(long))
+                            new ConstantDescriptor((long)-987654321, typeof(long).AssemblyQualifiedName)
                         ),
                         new GreaterThanBinaryDescriptor
                         (
                             new MemberSelectorDescriptor("LongProp", new ParameterDescriptor(parameterName)),
-                            new ConstantDescriptor((long)-123456789, typeof(long))
+                            new ConstantDescriptor((long)-123456789, typeof(long).AssemblyQualifiedName)
                         )
                     )
                 );
@@ -5187,7 +5193,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new InDescriptor
                     (
                         new MemberSelectorDescriptor("SimpleEnumProp", new ParameterDescriptor(parameterName)),
-                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, SimpleEnum.Second }, typeof(SimpleEnum))
+                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, SimpleEnum.Second }, typeof(SimpleEnum).AssemblyQualifiedName)
                     )
                 );
         }
@@ -5210,7 +5216,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new InDescriptor
                     (
                         new MemberSelectorDescriptor("NullableSimpleEnumProp", new ParameterDescriptor(parameterName)),
-                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, SimpleEnum.Second }, typeof(SimpleEnum?))
+                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, SimpleEnum.Second }, typeof(SimpleEnum?).AssemblyQualifiedName)
                     )
                 );
         }
@@ -5233,7 +5239,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new InDescriptor
                     (
                         new MemberSelectorDescriptor("NullableSimpleEnumProp", new ParameterDescriptor(parameterName)),
-                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, null }, typeof(SimpleEnum?))
+                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, null }, typeof(SimpleEnum?).AssemblyQualifiedName)
                     )
                 );
         }
@@ -5373,7 +5379,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, "$it => $it.Category.EnumerableProducts.OfType().Any(p => (p.ProductName == \"ProductName\"))");
+            AssertFilterStringIsCorrect(filter, "$it => $it.Category.EnumerableProducts.Cast().Any(p => (p.ProductName == \"ProductName\"))");
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5387,7 +5393,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                 "EnumerableProducts",
                                 new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName))
                             ),
-                            typeof(DerivedProduct)
+                            typeof(DerivedProduct).AssemblyQualifiedName
                         ),
                         new EqualsBinaryDescriptor
                         (
@@ -5406,7 +5412,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             var filter = CreateFilter<Product>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, "$it => $it.Category.QueryableProducts.OfType().Any(p => (p.ProductName == \"ProductName\"))");
+            AssertFilterStringIsCorrect(filter, "$it => $it.Category.QueryableProducts.Cast().Any(p => (p.ProductName == \"ProductName\"))");
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5420,7 +5426,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                 "QueryableProducts",
                                 new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName))
                             ),
-                            typeof(DerivedProduct)
+                            typeof(DerivedProduct).AssemblyQualifiedName
                         ),
                         new EqualsBinaryDescriptor
                         (
@@ -5456,7 +5462,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                 "Products",
                                 new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName))
                             ),
-                            typeof(DerivedProduct)
+                            typeof(DerivedProduct).AssemblyQualifiedName
                         ),
                         new EqualsBinaryDescriptor
                         (
@@ -5488,7 +5494,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CastDescriptor
                             (
                                 new ParameterDescriptor(parameterName),
-                                typeof(Product)
+                                typeof(Product).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor("ProductName")
@@ -5509,7 +5515,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CastDescriptor
                             (
                                 new ParameterDescriptor(parameterName),
-                                typeof(Product)
+                                typeof(Product).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor("ProductName")
@@ -5525,7 +5531,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CastDescriptor
                             (
                                 new ParameterDescriptor(parameterName),
-                                typeof(DerivedProduct)
+                                typeof(DerivedProduct).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor("DerivedProductName")
@@ -5544,7 +5550,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                 new CastDescriptor
                                 (
                                     new ParameterDescriptor(parameterName),
-                                    typeof(DerivedProduct)
+                                    typeof(DerivedProduct).AssemblyQualifiedName
                                 )
                             )
                         ),
@@ -5566,10 +5572,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new CastDescriptor
                                     (
                                         new ParameterDescriptor(parameterName),
-                                        typeof(DerivedProduct)
+                                        typeof(DerivedProduct).AssemblyQualifiedName
                                     )
                                 ),
-                                typeof(DerivedCategory)
+                                typeof(DerivedCategory).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor(123)
@@ -5579,7 +5585,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(Inheritance_WithDerivedInstance_Data))]
-        public void Inheritance_WithDerivedInstance(IExpressionDescriptor filterBody)
+        public void Inheritance_WithDerivedInstance(DescriptorBase filterBody)
         {
             //act
             var filter = CreateFilter<DerivedProduct>();
@@ -5608,7 +5614,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CastDescriptor
                             (
                                 new ParameterDescriptor(parameterName),
-                                typeof(DerivedProduct)
+                                typeof(DerivedProduct).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor("DerivedProductName")
@@ -5627,7 +5633,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                 new CastDescriptor
                                 (
                                     new ParameterDescriptor(parameterName),
-                                    typeof(DerivedProduct)
+                                    typeof(DerivedProduct).AssemblyQualifiedName
                                 )
                             )
                         ),
@@ -5649,10 +5655,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new CastDescriptor
                                     (
                                         new ParameterDescriptor(parameterName),
-                                        typeof(DerivedProduct)
+                                        typeof(DerivedProduct).AssemblyQualifiedName
                                     )
                                 ),
-                                typeof(DerivedCategory)
+                                typeof(DerivedCategory).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor(123)
@@ -5662,7 +5668,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(Inheritance_WithBaseInstance_Data))]
-        public void Inheritance_WithBaseInstance(IExpressionDescriptor filterBody)
+        public void Inheritance_WithBaseInstance(DescriptorBase filterBody)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -6065,7 +6071,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("IntProp", new ParameterDescriptor(parameterName)),
-                            typeof(long)
+                            typeof(long).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor((long)123)
                     ),
@@ -6078,7 +6084,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new MemberSelectorDescriptor("NullableLongProp", new ParameterDescriptor(parameterName)),
-                            typeof(double)
+                            typeof(double).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(1.23d)
                     ),
@@ -6091,7 +6097,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertDescriptor
                         (
                             new ConstantDescriptor(2147483647),
-                            typeof(short)
+                            typeof(short).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(null)
                     ),
@@ -6103,7 +6109,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new ConvertToStringDescriptor
                         (
-                            new ConstantDescriptor(SimpleEnum.Second, typeof(SimpleEnum))
+                            new ConstantDescriptor(SimpleEnum.Second, typeof(SimpleEnum).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor("1")
                     ),
@@ -6120,9 +6126,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                 new ConvertDescriptor
                                 (
                                     new MemberSelectorDescriptor("IntProp", new ParameterDescriptor(parameterName)),
-                                    typeof(long)
+                                    typeof(long).AssemblyQualifiedName
                                 ),
-                                typeof(short)
+                                typeof(short).AssemblyQualifiedName
                             )
                         ),
                         new ConstantDescriptor("123")
@@ -6136,7 +6142,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertToEnumDescriptor
                         (
                             "123",
-                            typeof(SimpleEnum)
+                            typeof(SimpleEnum).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(null)
                     ),
@@ -6146,7 +6152,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(CastMethod_Succeeds_Data))]
-        public void CastMethod_Succeeds(IExpressionDescriptor filterBody, string expectedResult)
+        public void CastMethod_Succeeds(DescriptorBase filterBody, string expectedResult)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -6171,7 +6177,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(short)
+                        typeof(short).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it Is System.Int16), True, False)"
                 },
@@ -6180,7 +6186,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Product)
+                        typeof(Product).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Product), True, False)"
                 },
@@ -6189,7 +6195,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("ProductName", new ParameterDescriptor(parameterName)),
-                        typeof(string)
+                        typeof(string).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.ProductName Is System.String), True, False)"
                 },
@@ -6198,7 +6204,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName)),
-                        typeof(Category)
+                        typeof(Category).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.Category Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Category), True, False)"
                 },
@@ -6207,7 +6213,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName)),
-                        typeof(DerivedCategory)
+                        typeof(DerivedCategory).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.Category Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.DerivedCategory), True, False)"
                 },
@@ -6216,7 +6222,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Ranking", new ParameterDescriptor(parameterName)),
-                        typeof(SimpleEnum)
+                        typeof(SimpleEnum).AssemblyQualifiedName
                     ),
                     "$it => IIF(($it.Ranking Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum), True, False)"
                 },
@@ -6224,7 +6230,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(IsofMethod_Succeeds_Data))]
-        public void IsofMethod_Succeeds(IExpressionDescriptor filterBody, string expectedExpression)
+        public void IsofMethod_Succeeds(DescriptorBase filterBody, string expectedExpression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -6247,7 +6253,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(byte[])
+                        typeof(byte[]).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6255,7 +6261,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(bool)
+                        typeof(bool).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6263,7 +6269,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(byte)
+                        typeof(byte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6271,7 +6277,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(DateTimeOffset)
+                        typeof(DateTimeOffset).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6279,7 +6285,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Decimal)
+                        typeof(Decimal).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6287,7 +6293,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(double)
+                        typeof(double).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6295,7 +6301,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(TimeSpan)
+                        typeof(TimeSpan).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6303,7 +6309,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Guid)
+                        typeof(Guid).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6311,7 +6317,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Int16)
+                        typeof(Int16).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6319,7 +6325,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Int32)
+                        typeof(Int32).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6327,7 +6333,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Int64)
+                        typeof(Int64).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6335,7 +6341,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(sbyte)
+                        typeof(sbyte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6343,7 +6349,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Single)
+                        typeof(Single).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6351,7 +6357,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(System.IO.Stream)
+                        typeof(System.IO.Stream).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6359,7 +6365,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(string)
+                        typeof(string).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6367,7 +6373,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(SimpleEnum)
+                        typeof(SimpleEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6375,7 +6381,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(FlagsEnum)
+                        typeof(FlagsEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6383,7 +6389,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("ByteArrayProp", new ParameterDescriptor(parameterName)),
-                        typeof(byte[])
+                        typeof(byte[]).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6391,7 +6397,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("IntProp", new ParameterDescriptor(parameterName)),
-                        typeof(SimpleEnum)
+                        typeof(SimpleEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6399,7 +6405,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("NullableShortProp", new ParameterDescriptor(parameterName)),
-                        typeof(short)
+                        typeof(short).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6407,7 +6413,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(byte[])
+                        typeof(byte[]).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6415,7 +6421,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(bool)
+                        typeof(bool).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6423,7 +6429,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(byte)
+                        typeof(byte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6431,7 +6437,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(DateTimeOffset)
+                        typeof(DateTimeOffset).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6439,7 +6445,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Decimal)
+                        typeof(Decimal).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6447,7 +6453,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(double)
+                        typeof(double).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6455,7 +6461,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(TimeSpan)
+                        typeof(TimeSpan).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6463,7 +6469,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Guid)
+                        typeof(Guid).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6471,7 +6477,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Int16)
+                        typeof(Int16).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6479,7 +6485,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Int32)
+                        typeof(Int32).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6487,7 +6493,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Int64)
+                        typeof(Int64).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6495,7 +6501,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(sbyte)
+                        typeof(sbyte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6503,7 +6509,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(Single)
+                        typeof(Single).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6511,7 +6517,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(System.IO.Stream)
+                        typeof(System.IO.Stream).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6519,7 +6525,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(string)
+                        typeof(string).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6527,7 +6533,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(SimpleEnum)
+                        typeof(SimpleEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6535,7 +6541,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(FlagsEnum)
+                        typeof(FlagsEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6543,7 +6549,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(byte)
+                        typeof(byte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6551,7 +6557,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(decimal)
+                        typeof(decimal).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6559,7 +6565,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(double)
+                        typeof(double).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6567,7 +6573,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(short)
+                        typeof(short).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6575,7 +6581,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(long)
+                        typeof(long).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6583,7 +6589,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(sbyte)
+                        typeof(sbyte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6591,7 +6597,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(float)
+                        typeof(float).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6599,7 +6605,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("hello"),
-                        typeof(Stream)
+                        typeof(Stream).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6607,7 +6613,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(0),
-                        typeof(FlagsEnum)
+                        typeof(FlagsEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6615,7 +6621,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(0),
-                        typeof(SimpleEnum)
+                        typeof(SimpleEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6623,7 +6629,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("2001-01-01T12:00:00.000+08:00"),
-                        typeof(DateTimeOffset)
+                        typeof(DateTimeOffset).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6631,7 +6637,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("00000000-0000-0000-0000-000000000000"),
-                        typeof(Guid)
+                        typeof(Guid).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6639,7 +6645,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("23"),
-                        typeof(byte)
+                        typeof(byte).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6647,7 +6653,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("23"),
-                        typeof(short)
+                        typeof(short).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6655,7 +6661,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("23"),
-                        typeof(int)
+                        typeof(int).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6663,7 +6669,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("false"),
-                        typeof(bool)
+                        typeof(bool).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6671,7 +6677,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("OData"),
-                        typeof(byte[])
+                        typeof(byte[]).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6679,7 +6685,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("PT12H'"),
-                        typeof(TimeSpan)
+                        typeof(TimeSpan).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6687,7 +6693,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(23),
-                        typeof(string)
+                        typeof(string).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6695,7 +6701,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("0"),
-                        typeof(FlagsEnum)
+                        typeof(FlagsEnum).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6703,14 +6709,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("0"),
-                        typeof(SimpleEnum)
+                        typeof(SimpleEnum).AssemblyQualifiedName
                     )
                 }
             };
 
         [Theory]
         [MemberData(nameof(IsOfPrimitiveType_Succeeds_WithFalse_Data))]
-        public void IsOfPrimitiveType_Succeeds_WithFalse(IExpressionDescriptor filterBody)
+        public void IsOfPrimitiveType_Succeeds_WithFalse(DescriptorBase filterBody)
         {
             //arrange
             var model = new DataTypes();
@@ -6737,7 +6743,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(DerivedProduct)
+                        typeof(DerivedProduct).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6745,7 +6751,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("SupplierAddress", new ParameterDescriptor(parameterName)),
-                        typeof(Address)
+                        typeof(Address).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6753,14 +6759,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Category", new ParameterDescriptor(parameterName)),
-                        typeof(DerivedCategory)
+                        typeof(DerivedCategory).AssemblyQualifiedName
                     )
                 }
             };
 
         [Theory]
         [MemberData(nameof(IsOfQuotedNonPrimitiveType))]
-        public void IsOfQuotedNonPrimitiveType_Succeeds(IExpressionDescriptor filterBody)
+        public void IsOfQuotedNonPrimitiveType_Succeeds(DescriptorBase filterBody)
         {
             //arrange
             var model = new DerivedProduct
@@ -6791,7 +6797,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(Address)
+                        typeof(Address).AssemblyQualifiedName
                     )
                 },
                 new object []
@@ -6799,14 +6805,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(DerivedCategory)
+                        typeof(DerivedCategory).AssemblyQualifiedName
                     )
                 }
             };
 
         [Theory]
         [MemberData(nameof(IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse_Data))]
-        public void IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse(IExpressionDescriptor filterBody)
+        public void IsOfQuotedNonPrimitiveTypeWithNull_Succeeds_WithFalse(DescriptorBase filterBody)
         {
             //arrange
             var model = new DerivedProduct
@@ -6938,7 +6944,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(ByteArrayComparisons_Data))]
-        public void ByteArrayComparisons(IExpressionDescriptor filterBody, string expectedExpression, bool expected)
+        public void ByteArrayComparisons(DescriptorBase filterBody, string expectedExpression, bool expected)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -7001,7 +7007,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(DisAllowed_ByteArrayComparisons_Data))]
-        public void DisAllowed_ByteArrayComparisons(IExpressionDescriptor filterBody)
+        public void DisAllowed_ByteArrayComparisons(DescriptorBase filterBody)
         {
             //assert
             Assert.Throws<InvalidOperationException>(() => CreateFilter<DataTypes>());
@@ -7025,7 +7031,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             (
                                 new MemberSelectorDescriptor("NullableUShortProp", new ParameterDescriptor(parameterName))
                             ),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(12)
                     ),
@@ -7041,7 +7047,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             (
                                 new MemberSelectorDescriptor("NullableULongProp", new ParameterDescriptor(parameterName))
                             ),
-                            typeof(long?)
+                            typeof(long?).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(12L)
                     ),
@@ -7057,7 +7063,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             (
                                 new MemberSelectorDescriptor("NullableUIntProp", new ParameterDescriptor(parameterName))
                             ),
-                            typeof(int?)
+                            typeof(int?).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(12)
                     ),
@@ -7082,7 +7088,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(Nullable_NonstandardEdmPrimitives_Data))]
-        public void Nullable_NonstandardEdmPrimitives(IExpressionDescriptor filterBody, string expectedExpression)
+        public void Nullable_NonstandardEdmPrimitives(DescriptorBase filterBody, string expectedExpression)
         {
             //act
             var filter = CreateFilter<DataTypes>();
@@ -7117,7 +7123,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ 1 },
-                                typeof(int)
+                                typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Int32].Contains($it.Category.Product.ProductID)"
@@ -7130,7 +7136,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ 1 },
-                                typeof(int)
+                                typeof(int).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Int32].Contains($it.Category.Product.ProductID)"
@@ -7151,7 +7157,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
-                                typeof(Guid)
+                                typeof(Guid).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Guid].Contains($it.Category.Product.GuidProperty)"
@@ -7172,7 +7178,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new CollectionConstantDescriptor
                             (
                                 new List<object>{ new Guid("dc75698b-581d-488b-9638-3e28dd51d8f7") },
-                                typeof(Guid?)
+                                typeof(Guid?).AssemblyQualifiedName
                             )
                         ),
                         "$it => System.Collections.Generic.List`1[System.Nullable`1[System.Guid]].Contains($it.Category.Product.NullableGuidProperty)"
@@ -7181,7 +7187,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         [Theory]
         [MemberData(nameof(InOnNavigation_Data))]
-        public void InOnNavigation(IExpressionDescriptor filterBody, string expectedExpression)
+        public void InOnNavigation(DescriptorBase filterBody, string expectedExpression)
         {
             //act
             var filter = CreateFilter<Product>();
@@ -7278,7 +7284,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new CollectionConstantDescriptor
                         (
                             new List<object> { "Prod1", "Prod2" },
-                            typeof(string)
+                            typeof(string).AssemblyQualifiedName
                         )
                     )
                 );
@@ -7302,7 +7308,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new CollectionConstantDescriptor
                         (
                             new List<object> { SimpleEnum.First, SimpleEnum.Second },
-                            typeof(SimpleEnum)
+                            typeof(SimpleEnum).AssemblyQualifiedName
                         )
                     )
                 );
@@ -7350,7 +7356,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Assert.True(expected == resultExpression, string.Format("Expected expression '{0}' but the deserializer produced '{1}'", expected, resultExpression));
         }
 
-        private Expression<Func<T, bool>> GetFilter<T>(IExpressionDescriptor filterBody)
+        private Expression<Func<T, bool>> GetFilter<T>(DescriptorBase filterBody)
         {
             IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
 
@@ -7359,7 +7365,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 new FilterLambdaDescriptor
                 (
                     filterBody, 
-                    typeof(T), 
+                    typeof(T).AssemblyQualifiedName, 
                     parameterName
                 ),
                 opts => opts.Items["parameters"] = GetParameters()

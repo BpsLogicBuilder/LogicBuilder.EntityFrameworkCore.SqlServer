@@ -1,3 +1,4 @@
+* 2026-03-25 - AB#97: All tests working with updated Logic Builder libraries.
 * 2026-03-24 - AB#96: Remove unused using directive from StoreBase.cs
 * 2026-03-24 - AB#96: Update using directives in GenericRepository.cs
 * 2026-03-24 - AB#96: Remove obsolete methods.

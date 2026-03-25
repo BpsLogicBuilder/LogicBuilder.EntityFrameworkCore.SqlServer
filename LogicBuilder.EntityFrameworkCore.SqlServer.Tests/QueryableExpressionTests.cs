@@ -51,7 +51,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                         new GreaterThanBinaryDescriptor
                                         (
                                             new MemberSelectorDescriptor("Id", new ParameterDescriptor("s")),
-                                            new ConstantDescriptor(1, typeof(int))
+                                            new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName)
                                         ),
                                         new GreaterThanBinaryDescriptor
                                         (
@@ -113,7 +113,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new GroupByDescriptor
                     (
                         new ParameterDescriptor("q"),
-                        new ConstantDescriptor(1, typeof(int)),
+                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                         "a"
                     ),
                     new MemberSelectorDescriptor("Key", new ParameterDescriptor("b")),
@@ -122,7 +122,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 ),
                 new MemberInitDescriptor
                 (
-                    new Dictionary<string, IExpressionDescriptor>
+                    new Dictionary<string, DescriptorBase>
                     {
                         ["Sum_budget"] = new ToListDescriptor
                         (
@@ -191,7 +191,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new GroupByDescriptor
                             (
                                 new ParameterDescriptor("q"),
-                                new ConstantDescriptor(1, typeof(int)),
+                                new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                 "item"
                             )
                         ),
@@ -201,7 +201,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     new MemberInitDescriptor
                     (
-                        new Dictionary<string, IExpressionDescriptor>
+                        new Dictionary<string, DescriptorBase>
                         {
                             ["Min_administratorName"] = new MinDescriptor
                             (
@@ -210,7 +210,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new ParameterDescriptor("q"),
                                     new EqualsBinaryDescriptor
                                     (
-                                        new ConstantDescriptor(1, typeof(int)),
+                                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                         new MemberSelectorDescriptor("Key", new ParameterDescriptor("sel"))
                                     ),
                                     "d"
@@ -220,7 +220,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new ConcatDescriptor
                                     (
                                         new MemberSelectorDescriptor("Administrator.LastName", new ParameterDescriptor("item")),
-                                        new ConstantDescriptor(" ", typeof(string))
+                                        new ConstantDescriptor(" ", typeof(string).AssemblyQualifiedName)
                                     ),
                                     new MemberSelectorDescriptor("Administrator.FirstName", new ParameterDescriptor("item"))
                                 ),
@@ -233,7 +233,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new ParameterDescriptor("q"),
                                     new EqualsBinaryDescriptor
                                     (
-                                        new ConstantDescriptor(1, typeof(int)),
+                                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                         new MemberSelectorDescriptor("Key", new ParameterDescriptor("sel"))
                                     ),
                                     "d"
@@ -246,7 +246,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new ParameterDescriptor("q"),
                                     new EqualsBinaryDescriptor
                                     (
-                                        new ConstantDescriptor(1, typeof(int)),
+                                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                         new MemberSelectorDescriptor("Key", new ParameterDescriptor("sel"))
                                     ),
                                     "d"
@@ -261,7 +261,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new ParameterDescriptor("q"),
                                     new EqualsBinaryDescriptor
                                     (
-                                        new ConstantDescriptor(1, typeof(int)),
+                                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                         new MemberSelectorDescriptor("Key", new ParameterDescriptor("sel"))
                                     ),
                                     "d"
@@ -276,7 +276,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                                     new ParameterDescriptor("q"),
                                     new EqualsBinaryDescriptor
                                     (
-                                        new ConstantDescriptor(1, typeof(int)),
+                                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                         new MemberSelectorDescriptor("Key", new ParameterDescriptor("sel"))
                                     ),
                                     "d"
@@ -311,7 +311,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                             new GroupByDescriptor
                             (
                                 new ParameterDescriptor("q"),
-                                new ConstantDescriptor(1, typeof(int)),
+                                new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
                                 "item"
                             )
                         ),
@@ -321,18 +321,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     ),
                     new MemberInitDescriptor
                     (
-                        new Dictionary<string, IExpressionDescriptor>
+                        new Dictionary<string, DescriptorBase>
                         {
                             ["NumericValue"] = new CountDescriptor
-                            {
-                                SourceOperand = new AsEnumerableDescriptor
-                                {
-                                    SourceOperand = new ParameterDescriptor
-                                    {
-                                        ParameterName = "sel"
-                                    }
-                                }
-                            }
+                            (
+                                new AsEnumerableDescriptor(new ParameterDescriptor("sel"))
+                            )
                         }
                     ),
                     "sel"
@@ -1198,7 +1192,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         ),
                         new MemberInitDescriptor
                         (
-                            new Dictionary<string, IExpressionDescriptor>
+                            new Dictionary<string, DescriptorBase>
                             {
                                 ["CategoryID"] = new MemberSelectorDescriptor("CategoryID", new ParameterDescriptor("a")),
                                 ["CategoryName"] = new MemberSelectorDescriptor("CategoryName", new ParameterDescriptor("a")),
@@ -1459,7 +1453,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         private static IDictionary<string, ParameterExpression> GetParameters()
             => new Dictionary<string, ParameterExpression>();
 
-        private Expression<Func<T, TResult>> GetExpression<T, TResult>(IExpressionDescriptor filterBody, string parameterName = "$it")
+        private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string parameterName = "$it")
         {
             IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
 
@@ -1468,9 +1462,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 new SelectorLambdaDescriptor
                 (
                     filterBody,
-                    typeof(T),
-                    typeof(TResult),
-                    parameterName
+                    typeof(T).AssemblyQualifiedName,
+                    parameterName,
+                    typeof(TResult).AssemblyQualifiedName
                 ),
                 opts => opts.Items["parameters"] = GetParameters()
             ).Build();

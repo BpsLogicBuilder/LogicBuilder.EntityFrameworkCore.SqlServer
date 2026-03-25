@@ -10,8 +10,11 @@ using LogicBuilder.Expressions.Utils.ExpressionBuilder.Logical;
 using LogicBuilder.Expressions.Utils.ExpressionBuilder.Operand;
 using LogicBuilder.Expressions.Utils.ExpressionBuilder.StringOperators;
 using LogicBuilder.Expressions.Utils.ExpressionDescriptors;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 {
@@ -63,17 +66,32 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 				.ForAllMembers(opt => opt.Ignore());
 
 			CreateMap<BinaryDescriptor, BinaryOperator>();
-			CreateMap<CastDescriptor, CastOperator>();
-			CreateMap<CeilingDescriptor, CeilingOperator>();
-			CreateMap<CollectionCastDescriptor, CollectionCastOperator>();
-			CreateMap<CollectionConstantDescriptor, CollectionConstantOperator>();
+			CreateMap<CastDescriptor, CastOperator>()
+                .ForMember(dest => dest.Type, opts => opts.Ignore())
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+            CreateMap<CeilingDescriptor, CeilingOperator>();
+			CreateMap<CollectionCastDescriptor, CollectionCastOperator>()
+				.ForMember(dest => dest.Type, opts => opts.Ignore())
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+            CreateMap<CollectionConstantDescriptor, CollectionConstantOperator>()
+                .ForMember(dest => dest.ElementType, opts => opts.Ignore())
+                .ForCtorParam("elementType", opts => opts.MapFrom(x => Type.GetType(x.ElementType)));
+			CreateMap<CollectionOfTypeDescriptor, CollectionOfTypeOperator>()
+				.ForMember(dest => dest.Type, opts => opts.Ignore())
+				.ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
 			CreateMap<ConcatDescriptor, ConcatOperator>();
-			CreateMap<ConstantDescriptor, ConstantOperator>();
-			CreateMap<ContainsDescriptor, ContainsOperator>();
+			CreateMap<ConstantDescriptor, ConstantOperator>()
+				.ForMember(dest => dest.Type, opts => opts.Ignore())
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+            CreateMap<ContainsDescriptor, ContainsOperator>();
 			CreateMap<ConvertCharArrayToStringDescriptor, ConvertCharArrayToStringOperator>();
-			CreateMap<ConvertDescriptor, ConvertOperator>();
-			CreateMap<ConvertToEnumDescriptor, ConvertToEnumOperator>();
-			CreateMap<ConvertToNullableUnderlyingValueDescriptor, ConvertToNullableUnderlyingValueOperator>();
+			CreateMap<ConvertDescriptor, ConvertOperator>()
+                .ForMember(dest => dest.Type, opts => opts.Ignore())
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+            CreateMap<ConvertToEnumDescriptor, ConvertToEnumOperator>()
+                .ForMember(dest => dest.Type, opts => opts.Ignore())
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+            CreateMap<ConvertToNullableUnderlyingValueDescriptor, ConvertToNullableUnderlyingValueOperator>();
 			CreateMap<ConvertToNumericDateDescriptor, ConvertToNumericDateOperator>();
 			CreateMap<ConvertToNumericTimeDescriptor, ConvertToNumericTimeOperator>();
 			CreateMap<ConvertToStringDescriptor, ConvertToStringOperator>();
@@ -90,8 +108,25 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 				)
 				.ForAllMembers(opt => opt.Ignore());
 
-			CreateMap<CustomMethodDescriptor, CustomMethodOperator>();
-			CreateMap<DateDescriptor, DateOperator>();
+			CreateMap<CustomMethodDescriptor, CustomMethodOperator>()
+                .ForMember(dest => dest.MethodInfo, opts => opts.Ignore())
+                .ForCtorParam
+				(
+					"methodInfo", 
+					opts => opts.MapFrom
+					(
+						x => Type.GetType(x.DeclaringType).GetMethod
+						(
+							x.MethodName,
+                            BindingFlags.NonPublic //NOSONAR - The method may be public or non-public. See test case CustomMethod_StaticMethoOfDeclaringType
+                                | BindingFlags.Instance 
+								| BindingFlags.Public 
+								| BindingFlags.Static,
+                            x.ParameterTypeNames.Select(Type.GetType).ToArray()
+						)
+					)
+				);
+            CreateMap<DateDescriptor, DateOperator>();
 			CreateMap<DayDescriptor, DayOperator>();
 			CreateMap<DistinctDescriptor, DistinctOperator>();
 			CreateMap<DivideBinaryDescriptor, DivideBinaryOperator>();
@@ -105,7 +140,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 					(
 						(IDictionary<string, ParameterExpression>)context.Items[ExpressionOperators.PARAMETERS_KEY],
 						context.Mapper.Map<IExpressionPart>(src.FilterBody),
-						src.SourceElementType,
+                        Type.GetType(src.SourceElementType),
 						src.ParameterName
 					)
 				)
@@ -156,14 +191,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 
 			CreateMap<HasDescriptor, HasOperator>();
 			CreateMap<HourDescriptor, HourOperator>();
-			CreateMap<IEnumerableSelectorLambdaDescriptor, IEnumerableSelectorLambdaOperator>()
+			CreateMap<EnumerableSelectorLambdaDescriptor, EnumerableSelectorLambdaOperator>()
 				.ConstructUsing
 				(
-					(src, context) => new IEnumerableSelectorLambdaOperator
+					(src, context) => new EnumerableSelectorLambdaOperator
 					(
 						(IDictionary<string, ParameterExpression>)context.Items[ExpressionOperators.PARAMETERS_KEY],
 						context.Mapper.Map<IExpressionPart>(src.Selector),
-						src.SourceElementType,
+                        Type.GetType(src.SourceElementType),
 						src.ParameterName
 					)
 				)
@@ -171,8 +206,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 
 			CreateMap<IndexOfDescriptor, IndexOfOperator>();
 			CreateMap<InDescriptor, InOperator>();
-			CreateMap<IsOfDescriptor, IsOfOperator>();
-			CreateMap<LastDescriptor, LastOperator>()
+			CreateMap<IsOfDescriptor, IsOfOperator>()
+                .ForMember(dest => dest.Type, opts => opts.Ignore())
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+            CreateMap<LastDescriptor, LastOperator>()
 				.ConstructUsing
 				(
 					(src, context) => new LastOperator
@@ -215,8 +252,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 				)
 				.ForAllMembers(opt => opt.Ignore());
 
-			CreateMap<MemberInitDescriptor, MemberInitOperator>();
-			CreateMap<MemberSelectorDescriptor, MemberSelectorOperator>();
+			CreateMap<MemberInitDescriptor, MemberInitOperator>()
+                .ForMember(dest => dest.NewType, opts => opts.Ignore())
+                .ForCtorParam("newType", opts => opts.MapFrom(x => Type.GetType(x.NewType)));
+            CreateMap<MemberSelectorDescriptor, MemberSelectorOperator>();
 			CreateMap<MinDateTimeDescriptor, MinDateTimeOperator>();
 			CreateMap<MinDescriptor, MinOperator>()
 				.ConstructUsing
@@ -300,8 +339,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 					(
 						(IDictionary<string, ParameterExpression>)context.Items[ExpressionOperators.PARAMETERS_KEY],
 						context.Mapper.Map<IExpressionPart>(src.Selector),
-						src.SourceElementType,
-						src.BodyType,
+                        Type.GetType(src.SourceElementType),
+                        Type.GetType(src.BodyType),
 						src.ParameterName
 					)
 				)
@@ -430,7 +469,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 				.Include<GroupByDescriptor, GroupByOperator>()
 				.Include<HasDescriptor, HasOperator>()
 				.Include<HourDescriptor, HourOperator>()
-				.Include<IEnumerableSelectorLambdaDescriptor, IEnumerableSelectorLambdaOperator>()
+				.Include<EnumerableSelectorLambdaDescriptor, EnumerableSelectorLambdaOperator>()
 				.Include<IndexOfDescriptor, IndexOfOperator>()
 				.Include<InDescriptor, InOperator>()
 				.Include<IsOfDescriptor, IsOfOperator>()
