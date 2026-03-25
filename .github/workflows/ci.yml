@@ -32,10 +32,7 @@ jobs:
 
       - name: Add GitHub Packages source
         run: |
-          dotnet nuget add source https://nuget.pkg.github.com/bpsLogicBuilder/index.json \
-            --name GitHub \
-            --username OWNER \
-            --password ${{ secrets.GITHUB_TOKEN }}
+          dotnet nuget add source https://nuget.pkg.github.com/bpsLogicBuilder/index.json -name GitHub -username OWNER -password ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache dependencies
         uses: actions/cache@v4
