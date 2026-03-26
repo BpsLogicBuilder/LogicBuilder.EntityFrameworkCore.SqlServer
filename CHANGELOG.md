@@ -1,3 +1,4 @@
+* 2025-03-26 - AB#95: Add status and quality badges to README.md.
 * 2025-03-26 - AB#95: Tests for IContextRepository.
 * 2025-03-26 - AB#98: Improving maintainability with CodeQL and Sonar recommendations.
 * 2025-03-26 - AB#95: Update test coverage output to use only cobertura format.
