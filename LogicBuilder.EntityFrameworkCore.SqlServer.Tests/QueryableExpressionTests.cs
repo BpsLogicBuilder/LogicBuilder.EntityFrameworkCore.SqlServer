@@ -17,6 +17,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 {
     public class QueryableExpressionTests
     {
+        static QueryableExpressionTests()
+        {
+            InitializeMapperConfiguration();
+        }
+
         public QueryableExpressionTests()
         {
             Initialize();
@@ -84,25 +89,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         [Fact]
         public void BuildGroupBy_OrderBy_ThenBy_Skip_Take_Average()
         {
-            //arrange
-            var parameters = GetParameters();
-
-            Expression<Func<IQueryable<Department>, IQueryable<object>>> expression1 =
-                q => q.GroupBy(a => 1)
-                    .OrderBy(b => b.Key)
-                    .Select
-                    (
-                        c => new
-                        {
-                            Sum_budget = q.Where
-                            (
-                                d => ((d.DepartmentID == q.Count())
-                                    && (d.DepartmentID == c.Key))
-                            )
-                            .ToList()
-                        }
-                    );
-
             //act
             var descriptor = new SelectDescriptor
             (
@@ -151,32 +137,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<IQueryable<Department>, IQueryable<object>>> expression = GetExpression<IQueryable<Department>, IQueryable<object>>(descriptor, "q");
 
             //assert
-            Assert.NotNull(expression);
+            AssertFilterStringIsCorrect(expression, "q => Convert(q.GroupBy(a => 1).OrderBy(b => b.Key).Select(c => new AnonymousType() {Sum_budget = q.Where(d => ((d.DepartmentID == q.Count()) AndAlso (d.DepartmentID == c.Key))).ToList()}))");
         }
 
         [Fact]
         public void BuildGroupBy_AsQueryable_OrderBy_Select_FirstOrDefault()
         {
-            //arrange
-            var parameters = GetParameters();
-
-            Expression<Func<IQueryable<Department>, object>> expression1 =
-                q => q.GroupBy(item => 1)
-                .AsQueryable()
-                .OrderBy(group => group.Key)
-                .Select
-                (
-                    sel => new
-                    {
-                        Min_administratorName = q.Where(d => (1 == sel.Key)).Min(item => string.Concat(string.Concat(item.Administrator.LastName, " "), item.Administrator.FirstName)),
-                        Count_name = q.Where(d => (1 == sel.Key)).Count(),
-                        Sum_budget = q.Where(d => (1 == sel.Key)).Sum(item => item.Budget),
-                        Min_budget = q.Where(d => (1 == sel.Key)).Min(item => item.Budget),
-                        Min_startDate = q.Where(d => (1 == sel.Key)).Min(item => item.StartDate)
-                    }
-                )
-                .FirstOrDefault();
-
             //act
             var descriptor = new FirstOrDefaultDescriptor
             (
@@ -291,7 +257,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Expression<Func<IQueryable<Department>, object>> expression = GetExpression<IQueryable<Department>, object>(descriptor, "q");
 
             //assert
-            Assert.NotNull(expression);
+            AssertFilterStringIsCorrect(expression, "q => Convert(q.GroupBy(item => 1).AsQueryable().OrderBy(group => group.Key).Select(sel => new AnonymousType() {Min_administratorName = q.Where(d => (1 == sel.Key)).Min(item => item.Administrator.LastName.Concat(\" \").Concat(item.Administrator.FirstName)), Count_name = q.Where(d => (1 == sel.Key)).Count(), Sum_budget = q.Where(d => (1 == sel.Key)).Sum(item => item.Budget), Min_budget = q.Where(d => (1 == sel.Key)).Min(item => item.Budget), Min_startDate = q.Where(d => (1 == sel.Key)).Min(item => item.StartDate)}).FirstOrDefault())");
         }
 
         [Fact]
@@ -335,7 +301,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
             //assert
             AssertFilterStringIsCorrect(expression, "q => Convert(q.GroupBy(item => 1).AsQueryable().OrderBy(group => group.Key).Select(sel => new AnonymousType() {NumericValue = sel.AsEnumerable().Count()}).FirstOrDefault())");
-            Assert.NotNull(expression);
         }
 
         [Fact]
@@ -429,7 +394,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         {
             //act
             var expression = CreateExpression<IEnumerable<Category>, IQueryable<Category>>();
-            var result = RunExpression(expression, new List<Category> { new Category() });
+            var result = RunExpression(expression, [new Category()]);
 
             //assert
             AssertFilterStringIsCorrect(expression, "$it => $it.AsQueryable()");
@@ -1426,19 +1391,22 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         "a"
                     ),
                     parameterName
-                ); ;
+                );
         }
 
+
+        private static void InitializeMapperConfiguration()
+        {
+            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
+            {
+                cfg.AddExpressionMapping();
+                cfg.AddProfile<ExpressionOperatorsMappingProfile>();
+            });
+        }
 
         static MapperConfiguration MapperConfiguration;
         private void Initialize()
         {
-            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
-                {
-                    cfg.AddExpressionMapping();
-                    cfg.AddProfile<ExpressionOperatorsMappingProfile>();
-                });
-
             serviceProvider = new ServiceCollection()
                 .AddSingleton<AutoMapper.IConfigurationProvider>
                 (
@@ -1448,10 +1416,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 .BuildServiceProvider();
         }
 
-        private static IDictionary<string, ParameterExpression> GetParameters()
-            => new Dictionary<string, ParameterExpression>();
+        private static Dictionary<string, ParameterExpression> GetParameters()
+            => [];
 
-        private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string parameterName = "$it")
+        private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string defaultParameterName = "$it")
         {
             IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
 
@@ -1461,7 +1429,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 (
                     filterBody,
                     typeof(T).AssemblyQualifiedName,
-                    parameterName,
+                    defaultParameterName,
                     typeof(TResult).AssemblyQualifiedName
                 ),
                 opts => opts.Items["parameters"] = GetParameters()

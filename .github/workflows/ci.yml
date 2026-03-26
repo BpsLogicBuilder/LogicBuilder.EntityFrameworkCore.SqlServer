@@ -50,6 +50,11 @@ jobs:
           dotnet test LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests\LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.csproj --no-build --verbosity normal --configuration Release /p:CollectCoverage=true /p:Threshold=20 /p:ThresholdType=line /p:ThresholdStat=Average /p:CoverletOutput=./TestResults/ /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="GeneratedCodeAttribute"
           dotnet test LogicBuilder.EntityFrameworkCore.SqlServer.Tests\LogicBuilder.EntityFrameworkCore.SqlServer.Tests.csproj --no-build --verbosity normal --configuration Release /p:CollectCoverage=true /p:Threshold=20 /p:ThresholdType=line /p:ThresholdStat=Average /p:CoverletOutput=./TestResults/ /p:MergeWith="../LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests/TestResults/coverage.json" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:CoverletOutputFormat=cobertura
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   publish-packages:
     name: Publish to GitHub Packages
     runs-on: ubuntu-latest

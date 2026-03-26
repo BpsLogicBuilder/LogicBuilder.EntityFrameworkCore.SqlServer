@@ -21,6 +21,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 {
     public class QueryableExpressionTests
     {
+        static QueryableExpressionTests()
+        {
+            InitializeMapperConfiguration();
+        }
+
         public QueryableExpressionTests()
         {
             Initialize();
@@ -124,16 +129,20 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             Assert.True(expected == resultExpression, string.Format("Expected expression '{0}' but the deserializer produced '{1}'", expected, resultExpression));
         }
 
+        private static void InitializeMapperConfiguration()
+        {
+            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
+            {
+                cfg.AddExpressionMapping();
+
+                cfg.AddProfile<SchoolProfile>();
+                cfg.AddProfile<Mapping.ExpressionOperatorsMappingProfile>();
+            });
+        }
+
         static MapperConfiguration MapperConfiguration;
         private void Initialize()
         {
-            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
-                {
-                    cfg.AddExpressionMapping();
-
-                    cfg.AddProfile<SchoolProfile>();
-                    cfg.AddProfile<Mapping.ExpressionOperatorsMappingProfile>();
-                });
             MapperConfiguration.AssertConfigurationIsValid();
             serviceProvider = new ServiceCollection()
                 .AddDbContext<SchoolContext>

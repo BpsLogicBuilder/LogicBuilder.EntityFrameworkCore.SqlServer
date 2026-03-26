@@ -18,6 +18,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 {
     public class FilterDescriptorTests
     {
+        static FilterDescriptorTests()
+        {
+            InitializeMapperConfiguration();
+        }
+
         public FilterDescriptorTests()
         {
             Initialize();
@@ -5371,11 +5376,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             //act
             var filter = CreateFilter<DataTypes>();
             var constant = (ConstantExpression)((MethodCallExpression)filter.Body).Arguments[0];
-            var values = (IList<SimpleEnum>)constant.Value;
+            var values = (IList<Position>)constant.Value;
 
             //assert
-            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum].Contains($it.SimpleEnumProp)");
-            Assert.Equal([SimpleEnum.First, SimpleEnum.Second], values);
+            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Position].Contains($it.SimpleEnumProp)");
+            Assert.Equal([Position.First, Position.Second], values);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5383,7 +5388,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new InDescriptor
                     (
                         new MemberSelectorDescriptor("SimpleEnumProp", new ParameterDescriptor(parameterName)),
-                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, SimpleEnum.Second }, typeof(SimpleEnum).AssemblyQualifiedName)
+                        new CollectionConstantDescriptor(new List<object> { Position.First, Position.Second }, typeof(Position).AssemblyQualifiedName)
                     )
                 );
         }
@@ -5394,11 +5399,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             //act
             var filter = CreateFilter<DataTypes>();
             var constant = (ConstantExpression)((MethodCallExpression)filter.Body).Arguments[0];
-            var values = (IList<SimpleEnum?>)constant.Value;
+            var values = (IList<Position?>)constant.Value;
 
             //assert
-            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[System.Nullable`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum]].Contains($it.NullableSimpleEnumProp)");
-            Assert.Equal([SimpleEnum.First, SimpleEnum.Second], values);
+            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[System.Nullable`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Position]].Contains($it.NullableSimpleEnumProp)");
+            Assert.Equal([Position.First, Position.Second], values);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5406,7 +5411,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new InDescriptor
                     (
                         new MemberSelectorDescriptor("NullableSimpleEnumProp", new ParameterDescriptor(parameterName)),
-                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, SimpleEnum.Second }, typeof(SimpleEnum?).AssemblyQualifiedName)
+                        new CollectionConstantDescriptor(new List<object> { Position.First, Position.Second }, typeof(Position?).AssemblyQualifiedName)
                     )
                 );
         }
@@ -5417,11 +5422,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             //act
             var filter = CreateFilter<DataTypes>();
             var constant = (ConstantExpression)((MethodCallExpression)filter.Body).Arguments[0];
-            var values = (IList<SimpleEnum?>)constant.Value;
+            var values = (IList<Position?>)constant.Value;
 
             //assert
-            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[System.Nullable`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum]].Contains($it.NullableSimpleEnumProp)");
-            Assert.Equal([SimpleEnum.First, null], values);
+            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[System.Nullable`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Position]].Contains($it.NullableSimpleEnumProp)");
+            Assert.Equal([Position.First, null], values);
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -5429,7 +5434,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new InDescriptor
                     (
                         new MemberSelectorDescriptor("NullableSimpleEnumProp", new ParameterDescriptor(parameterName)),
-                        new CollectionConstantDescriptor(new List<object> { SimpleEnum.First, null }, typeof(SimpleEnum?).AssemblyQualifiedName)
+                        new CollectionConstantDescriptor(new List<object> { Position.First, null }, typeof(Position?).AssemblyQualifiedName)
                     )
                 );
         }
@@ -6315,7 +6320,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     (
                         new ConvertToStringDescriptor
                         (
-                            new ConstantDescriptor(SimpleEnum.Second, typeof(SimpleEnum).AssemblyQualifiedName)
+                            new ConstantDescriptor(Position.Second, typeof(Position).AssemblyQualifiedName)
                         ),
                         new ConstantDescriptor("1")
                     ),
@@ -6348,7 +6353,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new ConvertToEnumDescriptor
                         (
                             "123",
-                            typeof(SimpleEnum).AssemblyQualifiedName
+                            typeof(Position).AssemblyQualifiedName
                         ),
                         new ConstantDescriptor(null)
                     ),
@@ -6434,9 +6439,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("Ranking", new ParameterDescriptor(parameterName)),
-                        typeof(SimpleEnum).AssemblyQualifiedName
+                        typeof(Position).AssemblyQualifiedName
                     ),
-                    "$it => IIF(($it.Ranking Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum), True, False)"
+                    "$it => IIF(($it.Ranking Is LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Position), True, False)"
                 ),
             ];
 
@@ -6590,7 +6595,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(SimpleEnum).AssemblyQualifiedName
+                        typeof(Position).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6598,7 +6603,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(null),
-                        typeof(FlagsEnum).AssemblyQualifiedName
+                        typeof(Bits).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6614,7 +6619,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new MemberSelectorDescriptor("IntProp", new ParameterDescriptor(parameterName)),
-                        typeof(SimpleEnum).AssemblyQualifiedName
+                        typeof(Position).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6750,7 +6755,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(SimpleEnum).AssemblyQualifiedName
+                        typeof(Position).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6758,7 +6763,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ParameterDescriptor(parameterName),
-                        typeof(FlagsEnum).AssemblyQualifiedName
+                        typeof(Bits).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6830,7 +6835,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(0),
-                        typeof(FlagsEnum).AssemblyQualifiedName
+                        typeof(Bits).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6838,7 +6843,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor(0),
-                        typeof(SimpleEnum).AssemblyQualifiedName
+                        typeof(Position).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6918,7 +6923,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("0"),
-                        typeof(FlagsEnum).AssemblyQualifiedName
+                        typeof(Bits).AssemblyQualifiedName
                     )
                 ),
                 new IsOfPrimitiveType_Succeeds_WithFalseTheoryData
@@ -6926,7 +6931,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                     new IsOfDescriptor
                     (
                         new ConstantDescriptor("0"),
-                        typeof(SimpleEnum).AssemblyQualifiedName
+                        typeof(Position).AssemblyQualifiedName
                     )
                 )
             ];
@@ -7548,7 +7553,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             var filter = CreateFilter<DataTypes>();
 
             //assert
-            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.SimpleEnum].Contains($it.SimpleEnumProp)");
+            AssertFilterStringIsCorrect(filter, "$it => System.Collections.Generic.List`1[LogicBuilder.EntityFrameworkCore.SqlServer.Tests.Data.Position].Contains($it.SimpleEnumProp)");
 
             Expression<Func<T, bool>> CreateFilter<T>()
                 => GetFilter<T>
@@ -7558,23 +7563,26 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                         new MemberSelectorDescriptor("SimpleEnumProp", new ParameterDescriptor(parameterName)),
                         new CollectionConstantDescriptor
                         (
-                            new List<object> { SimpleEnum.First, SimpleEnum.Second },
-                            typeof(SimpleEnum).AssemblyQualifiedName
+                            new List<object> { Position.First, Position.Second },
+                            typeof(Position).AssemblyQualifiedName
                         )
                     )
                 );
         }
         #endregion
 
+        private static void InitializeMapperConfiguration()
+        {
+            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
+            {
+                cfg.AddExpressionMapping();
+                cfg.AddProfile<ExpressionOperatorsMappingProfile>();
+            });
+        }
+
         static MapperConfiguration MapperConfiguration;
         private void Initialize()
         {
-            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
-                {
-                    cfg.AddExpressionMapping();
-                    cfg.AddProfile<ExpressionOperatorsMappingProfile>();
-                });
-
             serviceProvider = new ServiceCollection()
                 .AddSingleton<AutoMapper.IConfigurationProvider>
                 (
