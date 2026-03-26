@@ -1,3 +1,4 @@
+* 2025-03-26 - AB#95: Add //NOSONAR to QueryAsync for generic parameter count.
 * 2025-03-26 - AB#95: Enable nullable reference types and improve null-safety.
 * 2026-03-25 - AB#95: Refactor test infra, namespaces, and modernize test code.
 * 2026-03-25 - AB#97: Removing nuget.config.

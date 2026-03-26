@@ -40,7 +40,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             return _store.CountAsync<TModel, TData>(_mapper, filter);
         }
 
-        public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition? selectExpandDefinition = null)
+        public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition? selectExpandDefinition = null)//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
             where TModel : IBaseModel
             where TData : class, IBaseData
         {

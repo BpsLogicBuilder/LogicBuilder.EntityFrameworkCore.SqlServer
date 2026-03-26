@@ -46,7 +46,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         private static Expression<Func<TModel, object>>[] GetIncludes<TModel>(SelectExpandDefinition? selectExpandDefinition) where TModel : class
                 => selectExpandDefinition!.GetExpansionSelectors<TModel>().ToArray() ?? [];
 
-        internal static async Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(this IStore store, IMapper mapper,
+        internal static async Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(this IStore store, IMapper mapper,//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
             Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc,
             SelectExpandDefinition? selectExpandDefinition = null)
             where TModel : IBaseModel
