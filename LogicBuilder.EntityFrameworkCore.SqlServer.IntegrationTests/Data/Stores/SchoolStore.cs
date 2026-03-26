@@ -2,11 +2,7 @@
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores
 {
-    public class SchoolStore : StoreBase, ISchoolStore
+    public class SchoolStore(SchoolContext context) : StoreBase(context), ISchoolStore
     {
-        public SchoolStore(SchoolContext context)
-            : base(context)
-        {
-        }
     }
 }

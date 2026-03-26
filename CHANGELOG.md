@@ -1,4 +1,5 @@
-* 2025-03-26 - AB#98:  Improving maintainability with CodeQL and Sonar recommendations.
+* 2025-03-26 - AB#95: Tests for IContextRepository.
+* 2025-03-26 - AB#98: Improving maintainability with CodeQL and Sonar recommendations.
 * 2025-03-26 - AB#95: Update test coverage output to use only cobertura format.
 * 2025-03-26 - AB#95: Add //NOSONAR to QueryAsync for generic parameter count.
 * 2025-03-26 - AB#95: Enable nullable reference types and improve null-safety.
