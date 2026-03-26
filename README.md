@@ -1,5 +1,11 @@
 # LogicBuilder.EntityFrameworkCore.SqlServer
 
+[![CI](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/ci.yml/badge.svg)](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/github-code-scanning/codeql)
+[![codecov](https://codecov.io/gh/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/graph/badge.svg?token=7Y55F6XE9W)](https://codecov.io/gh/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=BpsLogicBuilder_LogicBuilder.EntityFrameworkCore.SqlServer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=BpsLogicBuilder_LogicBuilder.EntityFrameworkCore.SqlServer)
+[![NuGet](https://img.shields.io/nuget/v/LogicBuilder.EntityFrameworkCore.SqlServer.svg)](https://www.nuget.org/packages/LogicBuilder.EntityFrameworkCore.SqlServer)
+
 A repository pattern library for Entity Framework Core that provides seamless mapping between business models and data entities, with advanced expression translation capabilities.
 
 ## Features
