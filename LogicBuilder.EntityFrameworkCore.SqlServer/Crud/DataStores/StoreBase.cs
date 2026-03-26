@@ -8,19 +8,15 @@ using System.Threading.Tasks;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
 {
-    abstract public class StoreBase : IStore
+    abstract public class StoreBase(DbContext context) : IStore
     {
-        protected StoreBase(DbContext context)
-        {
-            _unitOfWork = new UnitOfWork(context);
-        }
 
         #region Fields
-        internal readonly IUnitOfWork _unitOfWork;
+        internal readonly IUnitOfWork _unitOfWork = new UnitOfWork(context);
         #endregion Fields
 
         #region Methods
-        public async Task<ICollection<T>> GetAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryFunc = null) where T : class, IBaseData
+        public async Task<ICollection<T>> GetAsync<T>(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IQueryable<T>>? queryFunc = null) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().GetAsync
             (
@@ -29,7 +25,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
             );
         }
 
-        public async Task<IQueryable<T>> GetQueryableAsync<T>(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IQueryable<T>> queryableFunc = null) where T : class, IBaseData
+        public async Task<IQueryable<T>> GetQueryableAsync<T>(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IQueryable<T>>? queryableFunc = null) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().GetQueryableAsync
             (
@@ -38,7 +34,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DataStores
             );
         }
 
-        public async Task<int> CountAsync<T>(Expression<Func<T, bool>> filter = null) where T : class, IBaseData
+        public async Task<int> CountAsync<T>(Expression<Func<T, bool>>? filter = null) where T : class, IBaseData
         {
             return await _unitOfWork.GetRepository<T>().CountAsync(filter);
         }

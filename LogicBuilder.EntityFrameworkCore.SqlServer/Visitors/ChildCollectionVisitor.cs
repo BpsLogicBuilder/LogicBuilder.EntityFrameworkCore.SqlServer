@@ -7,14 +7,9 @@ using System.Linq.Expressions;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
 {
-    internal abstract class ChildCollectionVisitor : ExpressionVisitor
+    internal abstract class ChildCollectionVisitor(List<ExpansionOptions> expansions) : ExpressionVisitor
     {
-        protected ChildCollectionVisitor(List<ExpansionOptions> expansions)
-        {
-            this.expansions = expansions;
-        }
-
-        protected readonly List<ExpansionOptions> expansions;
+        protected readonly List<ExpansionOptions> expansions = expansions;
         private readonly List<Expression> foundExpansions = [];
 
         protected override Expression VisitMemberInit(MemberInitExpression node)

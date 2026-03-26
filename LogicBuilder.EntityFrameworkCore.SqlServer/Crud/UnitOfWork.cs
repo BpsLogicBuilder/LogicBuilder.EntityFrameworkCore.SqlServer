@@ -25,7 +25,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             get { return this.context; }
         }
 
-        Dictionary<Type, object> repositoryDictionary;
+        Dictionary<Type, object>? repositoryDictionary;
         public virtual Dictionary<Type, object> RepositoryDictionary
         {
             get
@@ -35,7 +35,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             }
         }
 
-        Dictionary<Type, object> mapperDictionary;
+        Dictionary<Type, object>? mapperDictionary;
         public virtual Dictionary<Type, object> MapperDictionary
         {
             get

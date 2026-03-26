@@ -15,7 +15,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DbMappers
         #endregion Properties
 
         #region Methods
-        public virtual void AddChanges(ICollection<T> entities)
+        public virtual void AddChanges(ICollection<T>? entities)
         {
             if (entities == null || entities.Count == 0)
                 return;
@@ -39,7 +39,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DbMappers
             }
         }
 
-        public virtual void AddGraphChanges(ICollection<T> entities)
+        public virtual void AddGraphChanges(ICollection<T>? entities)
         {
             if (entities == null || entities.Count == 0)
                 return;

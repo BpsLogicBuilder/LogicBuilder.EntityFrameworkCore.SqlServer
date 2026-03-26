@@ -46,7 +46,9 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run unit tests
-        run: dotnet test --no-build --verbosity normal --configuration Release /p:CollectCoverage=true /p:Threshold=20 /p:ThresholdType=line /p:ThresholdStat=Average /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:CoverletOutputFormat=cobertura
+        run: |
+          dotnet test LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests\LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.csproj --no-build --verbosity normal --configuration Release /p:CollectCoverage=true /p:Threshold=20 /p:ThresholdType=line /p:ThresholdStat=Average /p:CoverletOutput=./TestResults/ /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="GeneratedCodeAttribute"
+          dotnet test LogicBuilder.EntityFrameworkCore.SqlServer.Tests\LogicBuilder.EntityFrameworkCore.SqlServer.Tests.csproj --no-build --verbosity normal --configuration Release /p:CollectCoverage=true /p:Threshold=20 /p:ThresholdType=line /p:ThresholdStat=Average /p:CoverletOutput=./TestResults/ /p:MergeWith="../LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests/TestResults/coverage.json" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:CoverletOutputFormat=cobertura
 
   publish-packages:
     name: Publish to GitHub Packages

@@ -82,7 +82,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 			CreateMap<ConcatDescriptor, ConcatOperator>();
 			CreateMap<ConstantDescriptor, ConstantOperator>()
 				.ForMember(dest => dest.Type, opts => opts.Ignore())
-                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type)));
+                .ForCtorParam("type", opts => opts.MapFrom(x => Type.GetType(x.Type ?? "")));
             CreateMap<ContainsDescriptor, ContainsOperator>();
 			CreateMap<ConvertCharArrayToStringDescriptor, ConvertCharArrayToStringOperator>();
 			CreateMap<ConvertDescriptor, ConvertOperator>()
@@ -107,25 +107,24 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 					)
 				)
 				.ForAllMembers(opt => opt.Ignore());
-
-			CreateMap<CustomMethodDescriptor, CustomMethodOperator>()
+            CreateMap<CustomMethodDescriptor, CustomMethodOperator>()
                 .ForMember(dest => dest.MethodInfo, opts => opts.Ignore())
                 .ForCtorParam
-				(
-					"methodInfo", 
-					opts => opts.MapFrom
-					(
-						x => Type.GetType(x.DeclaringType).GetMethod
-						(
-							x.MethodName,
+                (
+                    "methodInfo",
+                    opts => opts.MapFrom
+                    (
+                        x => Type.GetType(x.DeclaringType)!.GetMethod
+                        (
+                            x.MethodName,
                             BindingFlags.NonPublic //NOSONAR - The method may be public or non-public. See test case CustomMethod_StaticMethoOfDeclaringType
-                                | BindingFlags.Instance 
-								| BindingFlags.Public 
-								| BindingFlags.Static,
-                            x.ParameterTypeNames.Select(Type.GetType).ToArray()
-						)
-					)
-				);
+                                | BindingFlags.Instance
+                                | BindingFlags.Public
+                                | BindingFlags.Static,
+                            x.ParameterTypeNames.Select(tn => Type.GetType(tn)!).ToArray()
+                        )
+                    )
+                );
             CreateMap<DateDescriptor, DateOperator>();
 			CreateMap<DayDescriptor, DayOperator>();
 			CreateMap<DistinctDescriptor, DistinctOperator>();
@@ -140,7 +139,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 					(
 						(IDictionary<string, ParameterExpression>)context.Items[ExpressionOperators.PARAMETERS_KEY],
 						context.Mapper.Map<IExpressionPart>(src.FilterBody),
-                        Type.GetType(src.SourceElementType),
+                        Type.GetType(src.SourceElementType) ?? throw new InvalidOperationException("SourceElementType cannot be null"),
 						src.ParameterName
 					)
 				)
@@ -198,7 +197,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 					(
 						(IDictionary<string, ParameterExpression>)context.Items[ExpressionOperators.PARAMETERS_KEY],
 						context.Mapper.Map<IExpressionPart>(src.Selector),
-                        Type.GetType(src.SourceElementType),
+                        Type.GetType(src.SourceElementType) ?? throw new InvalidOperationException("SourceElementType cannot be null"),
 						src.ParameterName
 					)
 				)
@@ -254,7 +253,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 
 			CreateMap<MemberInitDescriptor, MemberInitOperator>()
                 .ForMember(dest => dest.NewType, opts => opts.Ignore())
-                .ForCtorParam("newType", opts => opts.MapFrom(x => Type.GetType(x.NewType)));
+                .ForCtorParam("newType", opts => opts.MapFrom(x => Type.GetType(x.NewType ?? "")));
             CreateMap<MemberSelectorDescriptor, MemberSelectorOperator>();
 			CreateMap<MinDateTimeDescriptor, MinDateTimeOperator>();
 			CreateMap<MinDescriptor, MinOperator>()
@@ -339,9 +338,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Mapping
 					(
 						(IDictionary<string, ParameterExpression>)context.Items[ExpressionOperators.PARAMETERS_KEY],
 						context.Mapper.Map<IExpressionPart>(src.Selector),
-                        Type.GetType(src.SourceElementType),
-                        Type.GetType(src.BodyType),
-						src.ParameterName
+                        Type.GetType(src.SourceElementType) ?? throw new InvalidOperationException("SourceElementType cannot be null"),
+                        Type.GetType(src.BodyType ?? "")!,//SelectorLambdaOperator handles null BodyType as object
+                        src.ParameterName
 					)
 				)
 				.ForAllMembers(opt => opt.Ignore());

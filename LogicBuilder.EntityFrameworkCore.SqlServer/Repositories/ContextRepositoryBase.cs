@@ -11,21 +11,16 @@ using System.Threading.Tasks;
 
 namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 {
-    abstract public class ContextRepositoryBase : IContextRepository
+    abstract public class ContextRepositoryBase(IStore store, IMapper mapper) : IContextRepository
     {
-        protected ContextRepositoryBase(IStore store, IMapper mapper)
-        {
-            this._store = store;
-            this._mapper = mapper;
-        }
 
         #region Fields
-        private readonly IStore _store;
-        private readonly IMapper _mapper;
+        private readonly IStore _store = store;
+        private readonly IMapper _mapper = mapper;
         #endregion Fields
 
         #region Methods
-        public Task<ICollection<TModel>> GetAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> queryFunc = null, SelectExpandDefinition selectExpandDefinition = null)
+        public Task<ICollection<TModel>> GetAsync<TModel, TData>(Expression<Func<TModel, bool>>? filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>>? queryFunc = null, SelectExpandDefinition? selectExpandDefinition = null)
             where TModel : class, IBaseModel
             where TData : class, IBaseData
         {
@@ -38,14 +33,14 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             );
         }
 
-        public Task<int> CountAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null)
+        public Task<int> CountAsync<TModel, TData>(Expression<Func<TModel, bool>>? filter = null)
             where TModel : IBaseModel
             where TData : class, IBaseData
         {
             return _store.CountAsync<TModel, TData>(_mapper, filter);
         }
 
-        public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null)
+        public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition? selectExpandDefinition = null)//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
             where TModel : IBaseModel
             where TData : class, IBaseData
         {
@@ -83,7 +78,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             return _store.SaveGraphsAsync<TModel, TData>(_mapper, entities);
         }
 
-        public Task<bool> DeleteAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null)
+        public Task<bool> DeleteAsync<TModel, TData>(Expression<Func<TModel, bool>>? filter = null)
             where TModel : IBaseModel
             where TData : class, IBaseData
         {
