@@ -58,7 +58,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
 
                     entry.Metadata
                         .FindPrimaryKey()
-                        .Properties
+                        ?.Properties
                         .ToDictionary
                         (
                             p => p.Name, 
@@ -97,7 +97,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                 GetEntityList(pInfo.GetValue(entity, null), pInfo.PropertyType, entities);
         }
 
-        private static void GetEntityList(object entity, Type entityType, List<IBaseData> entities)
+        private static void GetEntityList(object? entity, Type entityType, List<IBaseData> entities)
         {
             if (entity == null || entityType.IsLiteralType())
                 return;
@@ -108,10 +108,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                 GetEntityList((System.Collections.IEnumerable)entity, entities);
         }
 
-        private static Expression<Func<EntityEntry, bool>> GetPrimaryKeyFilter(Type entityType, string propertyName, object propertyValue) 
+        private static Expression<Func<EntityEntry, bool>> GetPrimaryKeyFilter(Type entityType, string propertyName, object? propertyValue) 
             => (Expression<Func<EntityEntry, bool>>)GetFilterLambdaOperator(entityType, propertyName, propertyValue).Build();
 
-        private static FilterLambdaOperator GetFilterLambdaOperator(Type entityType, string propertyName, object propertyValue)
+        private static FilterLambdaOperator GetFilterLambdaOperator(Type entityType, string propertyName, object? propertyValue)
         {
             var parameters = new Dictionary<string, ParameterExpression>();
             string parameterName = "f";
@@ -130,7 +130,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                             entityType
                         )
                     ),
-                    new ConstantOperator(propertyValue, propertyValue.GetType())
+                    new ConstantOperator(propertyValue! /*ConstantOperator handles null constantValue*/, propertyValue?.GetType())
                 ),
                 typeof(EntityEntry),
                 parameterName

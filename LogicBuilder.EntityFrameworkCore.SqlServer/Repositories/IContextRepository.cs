@@ -11,15 +11,15 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 {
     public interface IContextRepository
     {
-        Task<ICollection<TModel>> GetAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> queryFunc = null, SelectExpandDefinition selectExpandDefinition = null)
+        Task<ICollection<TModel>> GetAsync<TModel, TData>(Expression<Func<TModel, bool>>? filter = null, Expression<Func<IQueryable<TModel>, IQueryable<TModel>>>? queryFunc = null, SelectExpandDefinition? selectExpandDefinition = null)
             where TModel : class, IBaseModel
             where TData : class, IBaseData;
 
-        Task<int> CountAsync<TModel, TData>(Expression<Func<TModel, bool>> filter = null)
+        Task<int> CountAsync<TModel, TData>(Expression<Func<TModel, bool>>? filter = null)
             where TModel : IBaseModel
             where TData : class, IBaseData;
 
-        Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition selectExpandDefinition = null)
+        Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition? selectExpandDefinition = null)
             where TModel : IBaseModel
             where TData : class, IBaseData;
 
@@ -39,7 +39,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             where TModel : IBaseModel
             where TData : class, IBaseData;
 
-        Task<bool> DeleteAsync<TModel, TData>(System.Linq.Expressions.Expression<Func<TModel, bool>> filter = null)
+        Task<bool> DeleteAsync<TModel, TData>(System.Linq.Expressions.Expression<Func<TModel, bool>>? filter = null)
             where TModel : IBaseModel
             where TData : class, IBaseData;
 

@@ -26,8 +26,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
         #endregion Properties
 
         #region Methods
-        public virtual async Task<ICollection<T>> GetAsync(Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IQueryable<T>> queryableFunc = null)
+        public virtual async Task<ICollection<T>> GetAsync(Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IQueryable<T>>? queryableFunc = null)
         {
             IQueryable<T> query = this.dbSet;
 
@@ -37,8 +37,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             return queryableFunc != null ? await queryableFunc(query).ToListAsync() : await query.ToListAsync();
         }
 
-        public virtual Task<IQueryable<T>> GetQueryableAsync(Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IQueryable<T>> queryableFunc = null)
+        public virtual Task<IQueryable<T>> GetQueryableAsync(Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IQueryable<T>>? queryableFunc = null)
         {
             IQueryable<T> query = this.dbSet;
 
@@ -55,7 +55,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
             return Task.FromResult(queryableFunc(query));
         }
 
-        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> filter = null)
+        public virtual async Task<int> CountAsync(Expression<Func<T, bool>>? filter = null)
         {
             IQueryable<T> query = this.dbSet;
 
