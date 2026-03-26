@@ -76,10 +76,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         public static IQueryable ProjectTo(this IMapper mapper, IQueryable source, Type destType, SelectExpandDefinition? selectExpandDefinition = null)
-            => (IQueryable)(nameof(ProjectTo).GetGenericMethodInfo().MakeGenericMethod
+            => nameof(ProjectTo).GetGenericMethodInfo().MakeGenericMethod
             (
                 destType
-            ).Invoke(null, [mapper, source, selectExpandDefinition]) ?? throw new InvalidOperationException("Failed to invoke ProjectTo method."));
+            ).Invoke(null, [mapper, source, selectExpandDefinition]) as IQueryable ?? throw new InvalidOperationException("Failed to invoke ProjectTo method.");
 
         private static IQueryable<TDest> ProjectTo<TDest>(IMapper mapper, IQueryable source, SelectExpandDefinition? selectExpandDefinition = null) where TDest : class
             => mapper.ProjectTo<TDest>(source, null, GetIncludes<TDest>(selectExpandDefinition));

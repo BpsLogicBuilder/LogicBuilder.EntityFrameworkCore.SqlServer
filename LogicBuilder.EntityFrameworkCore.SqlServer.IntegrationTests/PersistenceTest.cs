@@ -16,6 +16,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 {
     public class PersistenceTest
     {
+        static PersistenceTest()
+        {
+            InitializeMapperConfiguration();
+        }
+
         public PersistenceTest()
         {
             Initialize();
@@ -171,18 +176,20 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
         }
 
         #region Helpers
+
+        private static void InitializeMapperConfiguration()
+        {
+            MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
+            {
+                cfg.AddExpressionMapping();
+
+                cfg.AddProfile<SchoolProfile>();
+            });
+        }
+
         static MapperConfiguration MapperConfiguration;
         private void Initialize()
         {
-            if (MapperConfiguration == null)
-            {
-                MapperConfiguration = ConfigurationHelper.GetMapperConfiguration(cfg =>
-                {
-                    cfg.AddExpressionMapping();
-
-                    cfg.AddProfile<SchoolProfile>();
-                });
-            }
             MapperConfiguration.AssertConfigurationIsValid();
             serviceProvider = new ServiceCollection()
                 .AddDbContext<SchoolContext>

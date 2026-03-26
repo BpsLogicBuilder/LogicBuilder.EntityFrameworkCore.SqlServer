@@ -15,6 +15,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 {
     public class CollectionExpressionTests
     {
+        static CollectionExpressionTests()
+        {
+            InitializeMapperConfiguration();
+        }
+
         public CollectionExpressionTests()
         {
             Initialize();
@@ -86,15 +91,20 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
             Assert.Equal(3, result.Count());
         }
 
-        static MapperConfiguration MapperConfiguration;
-        private void Initialize()
+
+
+        private static void InitializeMapperConfiguration()
         {
             MapperConfiguration ??= ConfigurationHelper.GetMapperConfiguration(cfg =>
             {
                 cfg.AddExpressionMapping();
                 cfg.AddProfile<ExpressionOperatorsMappingProfile>();
             });
+        }
 
+        static MapperConfiguration MapperConfiguration;
+        private void Initialize()
+        {
             serviceProvider = new ServiceCollection()
                 .AddSingleton<AutoMapper.IConfigurationProvider>
                 (
@@ -107,7 +117,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
         private static Dictionary<string, ParameterExpression> GetParameters()
             => [];
 
-        private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string parameterName = "$it")
+        private Expression<Func<T, TResult>> GetExpression<T, TResult>(DescriptorBase filterBody, string defaultParameterName = "$it")
         {
             IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
 
@@ -117,7 +127,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
                 (
                     filterBody,
                     typeof(T).AssemblyQualifiedName,
-                    parameterName,
+                    defaultParameterName,
                     typeof(TResult).AssemblyQualifiedName
                 ),
                 opts => opts.Items["parameters"] = GetParameters()
