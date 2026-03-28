@@ -11,6 +11,102 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
 {
     internal static class DatabaseSeeder
     {
+        internal static async Task Seed_Database(IDataClassesRepository repository)
+        {
+            if ((await repository.CountAsync<AddressModel, Address>()) > 0)
+                return;//database has been seeded
+
+            AddressModel[] addresses =
+            [
+                new AddressModel { City = "CityOne", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "CityTwo", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "CityThree", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "CityFour", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "CityFive", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "A", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "B", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "C", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "D", EntityState = Domain.EntityStateType.Added },
+                new AddressModel { City = "E", EntityState = Domain.EntityStateType.Added }
+            ];
+
+            await repository.SaveGraphsAsync<AddressModel, Address>(addresses);
+
+
+
+            CategoryModel[] categories =
+            [
+                new CategoryModel 
+                { 
+                    CategoryName = "CategoryOne",
+                    EntityState = Domain.EntityStateType.Added
+                },
+                new CategoryModel
+                { 
+                    CategoryName = "CategoryTwo",
+                    EntityState = Domain.EntityStateType.Added
+                }
+            ];
+
+            await repository.SaveGraphsAsync<CategoryModel, Category>(categories);
+
+            ProductModel[] products =
+            [
+                new ProductModel
+                {
+                    ProductName = "ProductOne",
+                    CategoryID = categories.Single(c => c.CategoryName == "CategoryOne").CategoryID,
+                    SupplierID = addresses.Single(a => a.City == "A").AddressID,
+                    EntityState = Domain.EntityStateType.Added
+                },
+                new ProductModel
+                {
+                    ProductName = "ProductTwo",
+                    CategoryID = categories.Single(c => c.CategoryName == "CategoryOne").CategoryID,
+                    SupplierID  = addresses.Single(a => a.City == "B").AddressID,
+                    EntityState = Domain.EntityStateType.Added
+                },
+                new ProductModel
+                {
+                    ProductName = "ProductThree",
+                    CategoryID = categories.Single(c => c.CategoryName == "CategoryOne").CategoryID,
+                    SupplierID = addresses.Single(a => a.City == "B").AddressID,
+                    EntityState = Domain.EntityStateType.Added
+                },
+                new ProductModel
+                {
+                    ProductName = "ProductFour",
+                    CategoryID = categories.Single(c => c.CategoryName == "CategoryTwo").CategoryID,
+                    SupplierID  = addresses.Single(a => a.City == "D").AddressID,
+                    EntityState = Domain.EntityStateType.Added
+                },
+                new ProductModel
+                {
+                    ProductName = "ProductFive",
+                    CategoryID = categories.Single(c => c.CategoryName == "CategoryTwo").CategoryID,
+                    SupplierID  = addresses.Single(a => a.City == "E").AddressID,
+                    EntityState = Domain.EntityStateType.Added
+                }
+            ];
+
+            await repository.SaveGraphsAsync<ProductModel, Product>(products);
+
+            int productOneID = products.Single(p => p.ProductName == "ProductOne").ProductID;
+            int productFourID = products.Single(p => p.ProductName == "ProductFour").ProductID;
+            AlternateAddressModel[] alternateAddresses =
+            [
+                new AlternateAddressModel { City = "CityOne", ProductID = productOneID, EntityState = Domain.EntityStateType.Added },
+                new AlternateAddressModel { City = "CityTwo", ProductID = productOneID, EntityState = Domain.EntityStateType.Added },
+                new AlternateAddressModel { City = "CityThree", ProductID = productFourID, EntityState = Domain.EntityStateType.Added },
+                new AlternateAddressModel { City = "CityFour", ProductID = productFourID, EntityState = Domain.EntityStateType.Added },
+                new AlternateAddressModel { City = "CityFive", ProductID = productFourID, EntityState = Domain.EntityStateType.Added },
+            ];
+
+            await repository.SaveGraphsAsync<AlternateAddressModel, AlternateAddress>(alternateAddresses);
+
+
+        }
+
         internal static async Task Seed_Database(ISchoolRepository repository)
         {
             if ((await repository.CountAsync<StudentModel, Student>()) > 0)
