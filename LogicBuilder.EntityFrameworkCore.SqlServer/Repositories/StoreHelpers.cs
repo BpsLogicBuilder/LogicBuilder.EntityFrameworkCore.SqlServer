@@ -44,7 +44,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         private static Expression<Func<TModel, object>>[] GetIncludes<TModel>(SelectExpandDefinition? selectExpandDefinition) where TModel : class
-                => selectExpandDefinition!.GetExpansionSelectors<TModel>().ToArray() ?? [];
+                => [.. selectExpandDefinition!.GetExpansionSelectors<TModel>()];//GetExpansionSelectors returns empty list if selectExpandDefinition is null
 
         internal static async Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(this IStore store, IMapper mapper,//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
             Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc,
@@ -76,10 +76,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         public static IQueryable ProjectTo(this IMapper mapper, IQueryable source, Type destType, SelectExpandDefinition? selectExpandDefinition = null)
-            => nameof(ProjectTo).GetGenericMethodInfo().MakeGenericMethod
+            => (nameof(ProjectTo).GetGenericMethodInfo().MakeGenericMethod
             (
                 destType
-            ).Invoke(null, [mapper, source, selectExpandDefinition]) as IQueryable ?? throw new InvalidOperationException("Failed to invoke ProjectTo method.");
+            ).Invoke(null, [mapper, source, selectExpandDefinition]) as IQueryable)!;//ProjectTo is guaranteed to return an IQueryable, so the null forgiving operator can be used here.
 
         private static IQueryable<TDest> ProjectTo<TDest>(IMapper mapper, IQueryable source, SelectExpandDefinition? selectExpandDefinition = null) where TDest : class
             => mapper.ProjectTo<TDest>(source, null, GetIncludes<TDest>(selectExpandDefinition));
@@ -152,10 +152,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         internal static IQueryable UpdateQueryable(this IQueryable query, Type modelType, List<List<ExpansionOptions>> expansions) 
-            => (IQueryable)(nameof(UpdateQueryable).GetGenericMethodInfo().MakeGenericMethod
+            => (nameof(UpdateQueryable).GetGenericMethodInfo().MakeGenericMethod
             (
                 modelType
-            ).Invoke(null, [query, expansions]) ?? throw new InvalidOperationException("Failed to invoke UpdateQueryable method."));
+            ).Invoke(null, [query, expansions])  as IQueryable)!;//UpdateQueryable is guaranteed to return an IQueryable, so the null forgiving operator can be used here.
 
         internal static IQueryable<TModel> UpdateQueryable<TModel>(this IQueryable<TModel> query, List<List<ExpansionOptions>> expansions)
         {

@@ -57,8 +57,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                     var entry = context.Entry(entity);
 
                     entry.Metadata
-                        .FindPrimaryKey()
-                        ?.Properties
+                        .FindPrimaryKey()!//Keyless enities cannot be inserted, updated, or deleted through the DbContext
+                        .Properties
                         .ToDictionary
                         (
                             p => p.Name, 
@@ -70,7 +70,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                                 .Entries()
                                 .Where(e => e.Entity.GetType() == eType)
                                 .AsQueryable(), 
-                            (query, next) => query.Where(GetPrimaryKeyFilter(eType, next.Key, next.Value))
+                            (query, next) => query.Where(GetPrimaryKeyFilter(eType, next.Key, next.Value!))//primary key will have a value
                         )
                         .ToList()
                         .ForEach(item => item.State = EntityState.Detached);
@@ -108,10 +108,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                 GetEntityList((System.Collections.IEnumerable)entity, entities);
         }
 
-        private static Expression<Func<EntityEntry, bool>> GetPrimaryKeyFilter(Type entityType, string propertyName, object? propertyValue) 
+        private static Expression<Func<EntityEntry, bool>> GetPrimaryKeyFilter(Type entityType, string propertyName, object propertyValue) 
             => (Expression<Func<EntityEntry, bool>>)GetFilterLambdaOperator(entityType, propertyName, propertyValue).Build();
 
-        private static FilterLambdaOperator GetFilterLambdaOperator(Type entityType, string propertyName, object? propertyValue)
+        private static FilterLambdaOperator GetFilterLambdaOperator(Type entityType, string propertyName, object propertyValue)
         {
             var parameters = new Dictionary<string, ParameterExpression>();
             string parameterName = "f";
@@ -130,7 +130,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud
                             entityType
                         )
                     ),
-                    new ConstantOperator(propertyValue! /*ConstantOperator handles null constantValue*/, propertyValue?.GetType())
+                    new ConstantOperator(propertyValue! /*ConstantOperator handles null constantValue*/, propertyValue.GetType())
                 ),
                 typeof(EntityEntry),
                 parameterName
