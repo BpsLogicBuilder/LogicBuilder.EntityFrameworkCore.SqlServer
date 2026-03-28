@@ -1,3 +1,4 @@
+* 2025-03-28 - AB#95: Remove obsolete comments from AddressModel class.
 * 2025-03-28 - AB#95: Improving code coverage.
 * 2025-03-26 - AB#95: Add status and quality badges to README.md.
 * 2025-03-26 - AB#95: Tests for IContextRepository.

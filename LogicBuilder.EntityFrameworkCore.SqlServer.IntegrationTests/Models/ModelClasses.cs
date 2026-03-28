@@ -76,11 +76,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models
     {
         [Key]
         public int AddressID { get; set; }
-        //public int ProductID { get; set; }
         public string City { get; set; }
         public string State { get; set; }
         public string ZipCode { get; set; }
-        //public ProductModel Product { get; set; }
     }
 
     public class DataTypesModel : BaseModel
