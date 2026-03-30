@@ -34,7 +34,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                 null,
                 GetIncludes<TModel>(selectExpandDefinition)
             )
-            .UpdateQueryable(selectExpandDefinition!.GetExpansions(typeof(TModel)))];//GetExpansions returns empty list if selectExpandDefinition is null
+            .UpdateQueryable(selectExpandDefinition!.GetExpansions(typeof(TModel)), mapper)];//GetExpansions returns empty list if selectExpandDefinition is null
 
             Func<IQueryable<TData>, IQueryable<TData>>? GetQueryFunc()
                 => mapper.MapExpression<Expression<Func<IQueryable<TData>, IQueryable<TData>>>>(queryFunc)?.Compile();
@@ -49,7 +49,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         internal static async Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(this IStore store, IMapper mapper,//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
             Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc,
             SelectExpandDefinition? selectExpandDefinition = null)
-            where TModel : IBaseModel
+            where TModel : class, IBaseModel
             where TData : class, IBaseData
         {
             //Map the expressions
@@ -72,7 +72,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                     elementType,
                     selectExpandDefinition
                 )
-                .UpdateQueryable(elementType, selectExpandDefinition!.GetExpansions(elementType));//GetExpansions returns empty list if selectExpandDefinition is null
+                .UpdateQueryable(elementType, selectExpandDefinition!.GetExpansions(elementType), mapper);//GetExpansions returns empty list if selectExpandDefinition is null
         }
 
         public static IQueryable ProjectTo(this IMapper mapper, IQueryable source, Type destType, SelectExpandDefinition? selectExpandDefinition = null)
@@ -151,13 +151,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             store.AddGraphChanges([.. mapper.Map<IEnumerable<TData>>(entities)]);
         }
 
-        internal static IQueryable UpdateQueryable(this IQueryable query, Type modelType, List<List<ExpansionOptions>> expansions) 
+        internal static IQueryable UpdateQueryable(this IQueryable query, Type modelType, List<List<ExpansionOptions>> expansions, IMapper mapper) 
             => (nameof(UpdateQueryable).GetGenericMethodInfo().MakeGenericMethod
             (
                 modelType
-            ).Invoke(null, [query, expansions])  as IQueryable)!;//UpdateQueryable is guaranteed to return an IQueryable, so the null forgiving operator can be used here.
+            ).Invoke(null, [query, expansions, mapper])  as IQueryable)!;//UpdateQueryable is guaranteed to return an IQueryable, so the null forgiving operator can be used here.
 
-        internal static IQueryable<TModel> UpdateQueryable<TModel>(this IQueryable<TModel> query, List<List<ExpansionOptions>> expansions)
+        internal static IQueryable<TModel> UpdateQueryable<TModel>(this IQueryable<TModel> query, List<List<ExpansionOptions>> expansions, IMapper mapper)
         {
             List<List<ExpansionOptions>> filters = GetFilters(expansions);
             List<List<ExpansionOptions>> methods = GetQueryMethods(expansions);
@@ -170,7 +170,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             if (methods.Count != 0)
                 expression = UpdateProjectionMethodExpression(expression);
 
-            if (filters.Count != 0)//do filter last so it runs before a Skip or Take call.
+            if (filters.Count != 0)
                 expression = UpdateProjectionFilterExpression(expression);
 
             return query.Provider.CreateQuery<TModel>(expression);
@@ -182,7 +182,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
                     filterList => projectionExpression = FilterUpdater.UpdaterExpansion
                     (
                         projectionExpression,
-                        filterList
+                        filterList,
+                        mapper
                     )
                 );
 

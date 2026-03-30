@@ -26,7 +26,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
                 );
             }
             else
-                throw new InvalidOperationException("Last expansion in the list must have a query method.");
+                throw new InvalidOperationException("The last expansion in the list must have a query method.");
         }
     }
 }

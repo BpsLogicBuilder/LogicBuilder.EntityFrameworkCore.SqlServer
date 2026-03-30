@@ -7628,13 +7628,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Tests
 
         private static bool RunFilter<TModel>(Expression<Func<TModel, bool>> filter, TModel instance)
             => filter.Compile().Invoke(instance);
-            }
+    }
 
-            public static class StringExtender
+    public static class StringExtender
+    {
+        public static string PadRightExStatic(this string str, int width)
         {
-            public static string PadRightExStatic(this string str, int width)
-            {
-                return str.PadRight(width);
-            }
+            return str.PadRight(width);
         }
+    }
 }
