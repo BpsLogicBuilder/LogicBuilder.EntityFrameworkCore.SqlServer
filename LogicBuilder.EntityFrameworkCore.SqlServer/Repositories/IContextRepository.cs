@@ -20,7 +20,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             where TData : class, IBaseData;
 
         Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition? selectExpandDefinition = null)//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
-            where TModel : IBaseModel
+            where TModel : class, IBaseModel
             where TData : class, IBaseData;
 
         Task<bool> SaveAsync<TModel, TData>(TModel entity)

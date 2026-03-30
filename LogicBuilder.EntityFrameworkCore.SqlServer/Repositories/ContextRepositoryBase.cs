@@ -13,7 +13,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
 {
     abstract public class ContextRepositoryBase(IStore store, IMapper mapper) : IContextRepository
     {
-
         #region Fields
         private readonly IStore _store = store;
         private readonly IMapper _mapper = mapper;
@@ -41,7 +40,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
         }
 
         public Task<TModelReturn> QueryAsync<TModel, TData, TModelReturn, TDataReturn>(Expression<Func<IQueryable<TModel>, TModelReturn>> queryFunc, SelectExpandDefinition? selectExpandDefinition = null)//NOSONAR -  in this case, reducing the number of generic parameters adds more complexity and would not be beneficial to readability.
-            where TModel : IBaseModel
+            where TModel : class, IBaseModel
             where TData : class, IBaseData
         {
             return _store.QueryAsync<TModel, TData, TModelReturn, TDataReturn>(

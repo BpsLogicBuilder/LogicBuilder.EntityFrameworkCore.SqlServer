@@ -10,16 +10,12 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DbMappers
         #endregion Variables
 
         #region Properties
-        protected IUnitOfWork UnitOfWork { get { return this.unitOfWork; } }
         protected virtual GenericRepository<T> Repository { get { return this.unitOfWork.GetRepository<T>(); } }
         #endregion Properties
 
         #region Methods
-        public virtual void AddChanges(ICollection<T>? entities)
+        public virtual void AddChanges(ICollection<T> entities)
         {
-            if (entities == null || entities.Count == 0)
-                return;
-
             foreach (T entity in entities)
             {
                 switch (entity.EntityState)
@@ -39,11 +35,8 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Crud.DbMappers
             }
         }
 
-        public virtual void AddGraphChanges(ICollection<T>? entities)
+        public virtual void AddGraphChanges(ICollection<T> entities)
         {
-            if (entities == null || entities.Count == 0)
-                return;
-
             foreach (T entity in entities)
             {
                 switch (entity.EntityState)

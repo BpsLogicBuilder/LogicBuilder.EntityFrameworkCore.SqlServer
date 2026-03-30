@@ -19,10 +19,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
                 && expansion.MemberType.GetUnderlyingElementType() == node.Type.GetUnderlyingElementType()
                 && this.expression.ToString().StartsWith(node.ToString()))//makes sure we're not updating some nested "Select"
             {
-                if (expansion.QueryOption == null)//QueryFunctionAppender.AppendQueryMethod is called from QueryFunctionUpdateer.GetBindingExpression only when expansion.QueryOption != null.
-                    throw new InvalidOperationException("QueryOption must be set to append a query method.");
-
-                return node.GetOrderBy(node.GetUnderlyingElementType(), expansion.QueryOption.SortCollection);
+                return node.GetOrderBy(node.GetUnderlyingElementType(), expansion.QueryOption!.SortCollection);//QueryFunctionAppender.AppendQueryMethod is called from QueryFunctionUpdateer.GetBindingExpression only when expansion.QueryOption != null.
             }
 
             return base.VisitMethodCall(node);

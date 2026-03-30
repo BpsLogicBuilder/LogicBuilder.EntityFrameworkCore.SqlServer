@@ -21,7 +21,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
 
             return Expression.MemberInit
             (
-                Expression.New(node.Type),
+                Expression.New(node.NewExpression.Constructor!, node.NewExpression.Arguments),//The ContextRepository will only create expansions for reference types, so there will always be a constructor.
                 node.Bindings.OfType<MemberAssignment>().Aggregate
                 (
                     new List<MemberBinding>(),
@@ -31,11 +31,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
 
             List<MemberBinding> AddBinding(List<MemberBinding> list, MemberAssignment binding)
             {
-                if (ListTypesAreEquivalent(binding.Member.GetMemberType(), expansion.MemberType)
+                if (TypesAreEquivalent(binding.Member.GetMemberType(), expansion.MemberType)
                         && string.Compare(binding.Member.Name, expansion.MemberName, true) == 0)//found the expansion
                 {
                     if (foundExpansions.Count > 0)
-                        throw new NotSupportedException("Recursive queries not supported");
+                        throw new NotSupportedException("Multiple sorts or filters not yet supported");
 
                     AddBindingExpression(GetBindingExpression(binding, expansion));
                 }
@@ -56,8 +56,11 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Visitors
 
         protected abstract Expression GetBindingExpression(MemberAssignment binding, ExpansionOptions expansion);
 
-        protected static bool ListTypesAreEquivalent(Type bindingType, Type expansionType)
+        protected static bool TypesAreEquivalent(Type bindingType, Type expansionType)
         {
+            if (!bindingType.IsList() && !expansionType.IsList())
+                return bindingType == expansionType;
+
             if (!bindingType.IsList() || !expansionType.IsList())
                 return false;
 

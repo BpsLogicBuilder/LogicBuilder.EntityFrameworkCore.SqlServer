@@ -1,4 +1,5 @@
 ﻿using LogicBuilder.Data;
+using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
