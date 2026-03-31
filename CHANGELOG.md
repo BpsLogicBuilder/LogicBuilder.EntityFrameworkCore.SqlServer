@@ -1,3 +1,4 @@
+* 2025-03-31 - AB#102: Integrate SonarQube Cloud analysis into CI workflow.
 * 2025-03-30 - AB#95: Refactor tests and improve code coverage.
 * 2025-03-28 - AB#95: Remove obsolete comments from AddressModel class.
 * 2025-03-28 - AB#95: Improving code coverage.
