@@ -5,15 +5,11 @@ using LogicBuilder.EntityFrameworkCore.SqlServer.Crud;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.AutoMapperProfiles;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Data.Stores;
-using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -246,13 +242,13 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Crud
         {
             //arrange
             SchoolContext context = serviceProvider.GetRequiredService<SchoolContext>();
-            ISchoolStore repository = new SchoolStore(context);
+            SchoolStore store = new(context);
 
             // Get a student from the database (this will be tracked)
-            var trackedStudent = (await repository.GetAsync<Student>(s => s.LastName == "Alexander")).First();
+            var trackedStudent = (await store.GetAsync<Student>(s => s.LastName == "Alexander")).First();
             trackedStudent.FirstName = "Updated";
             trackedStudent.EntityState = EntityStateType.Modified;
-            repository.AddChanges([trackedStudent]);
+            store.AddChanges([trackedStudent]);
             int studentId = trackedStudent.ID;
 
             // Verify the student is tracked

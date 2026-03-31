@@ -29,7 +29,7 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Visitors
             Expression<Func<int, int>> source = x => x + 1;
             Expression<Func<int, int>> target = x => x * 2;
             var visitor = new ReplaceExpressionVisitor(source.Body, target.Body);
-            Expression other = Expression.Constant("");
+            ConstantExpression other = Expression.Constant("");
 
             // Act
             var result = visitor.Visit(other);
