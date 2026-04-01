@@ -302,17 +302,6 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Crud
                 )
                 .AddTransient<ISchoolStore, SchoolStore>()
                 .AddTransient<ISchoolRepository, SchoolRepository>()
-                .AddDbContext<DataClassesContext>
-                (
-                    options => options.UseSqlServer
-                    (
-                        @"Server=(localdb)\mssqllocaldb;Database=HelpersDataClassesRepositoryTest;ConnectRetryCount=0",
-                        options => options.EnableRetryOnFailure()
-                    ),
-                    ServiceLifetime.Transient
-                )
-                .AddTransient<IDataClassesStore, DataClassesStore>()
-                .AddTransient<IDataClassesRepository, DataClassesRepository>()
                 .AddSingleton<AutoMapper.IConfigurationProvider>
                 (
                     MapperConfiguration
@@ -322,17 +311,9 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Crud
 
             ReCreateDataBase(serviceProvider.GetRequiredService<SchoolContext>());
             DatabaseSeeder.Seed_Database(serviceProvider.GetRequiredService<ISchoolRepository>()).Wait();
-            ReCreateDataBase(serviceProvider.GetRequiredService<DataClassesContext>());
-            DatabaseSeeder.Seed_Database(serviceProvider.GetRequiredService<IDataClassesRepository>()).Wait();
         }
 
         private static void ReCreateDataBase(SchoolContext context)
-        {
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-        }
-
-        private static void ReCreateDataBase(DataClassesContext context)
         {
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
