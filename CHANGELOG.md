@@ -1,3 +1,4 @@
+* 2025-04-01 - AB#99:  Added missing test coverage for GenericRepository.GetAsync.
 * 2025-04-01 - AB#99: Update package versions for release.
 * 2025-03-31 - AAB#102: Update CI coverage path, clean up tests and usings.
 * 2025-03-31 - AB#102: Integrate SonarQube Cloud analysis into CI workflow.
