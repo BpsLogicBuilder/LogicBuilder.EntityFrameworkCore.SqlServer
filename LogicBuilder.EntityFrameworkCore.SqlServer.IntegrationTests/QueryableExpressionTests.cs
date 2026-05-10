@@ -7,6 +7,7 @@ using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models;
 using LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests.Models.Repositories;
 using LogicBuilder.Expressions.Utils.ExpressionBuilder.Lambda;
 using LogicBuilder.Expressions.Utils.ExpressionDescriptors;
+using LogicBuilder.Expressions.Utils.Strutures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -49,6 +50,229 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.IntegrationTests
             //assert
             AssertFilterStringIsCorrect(expression, "q => q.GroupBy(item => item.EnrollmentDate).OrderByDescending(group => group.Key).Select(sel => new LookUpsModel() {DateTimeValue = sel.Key, NumericValue = Convert(sel.AsQueryable().Count())})");
             Assert.Equal(6, result.Count);
+        }
+
+        [Fact]
+        public async Task BuildGroup_Departments_By_OrderBy_ThenBy_Skip_Take_Average()
+        {
+            //arrange
+            var bodyParameter = new SelectDescriptor
+            (
+                new OrderByDescriptor
+                (
+                    new GroupByDescriptor
+                    (
+                        new ParameterDescriptor("q"),
+                        new ConstantDescriptor(1, typeof(int).AssemblyQualifiedName),
+                        "a"
+                    ),
+                    new MemberSelectorDescriptor("Key", new ParameterDescriptor("b")),
+                    ListSortDirection.Ascending,
+                    "b"
+                ),
+                new MemberInitDescriptor
+                (
+                    new Dictionary<string, DescriptorBase>
+                    {
+                        ["Sum_budget"] = new SumDescriptor
+                        (
+                            new WhereDescriptor
+                            (
+                                new ParameterDescriptor("q"),
+                                new AndBinaryDescriptor
+                                (
+                                    new NotEqualsBinaryDescriptor
+                                    (
+                                        new MemberSelectorDescriptor("DepartmentID", new ParameterDescriptor("d")),
+                                        new CountDescriptor(new ParameterDescriptor("q"))
+                                    ),
+                                    new EqualsBinaryDescriptor
+                                    (
+                                        new MemberSelectorDescriptor("DepartmentID", new ParameterDescriptor("d")),
+                                        new MemberSelectorDescriptor("Key", new ParameterDescriptor("c"))
+                                    )
+                                ),
+                                "d"
+                            ),
+                            new MemberSelectorDescriptor("Budget", new ParameterDescriptor("item")),
+                            "item"
+                        )
+                    }
+                ),
+                "c"
+            );
+
+            var selectorLambdaOperatorDescriptor = GetExpressionDescriptor<IQueryable<DepartmentModel>, IQueryable<dynamic>>
+            (
+                bodyParameter,
+                "q"
+            );
+            var expression = GetExpression<IQueryable<DepartmentModel>, IQueryable<dynamic>>(selectorLambdaOperatorDescriptor);
+
+            //act
+            IQueryable<dynamic> queryableResult = await serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<DepartmentModel, Department, IQueryable<dynamic>, IQueryable<dynamic>>(expression);
+            var result = await queryableResult.ToListAsync(CancellationToken.None);
+
+            //assert
+            AssertFilterStringIsCorrect(expression, "q => Convert(q.GroupBy(a => 1).OrderBy(b => b.Key).Select(c => new AnonymousType() {Sum_budget = q.Where(d => ((d.DepartmentID != q.Count()) AndAlso (d.DepartmentID == c.Key))).Sum(item => item.Budget)}))");
+            Assert.True(result.First().Sum_budget == 350000);
+        }
+
+        [Fact]
+        public async Task Group_Courses_By_Select()
+        {
+            //arrange
+            string parameterName = "$it";
+            var bodyParameter = new SelectDescriptor
+            (
+                new GroupByDescriptor
+                (
+                    new ParameterDescriptor(parameterName),
+                    new MemberSelectorDescriptor("DepartmentID", new ParameterDescriptor("a")),
+                    "a"
+                ),
+                new MemberSelectorDescriptor("Key", new ParameterDescriptor("b")),
+                "b"
+            );
+
+            var selectorLambdaOperatorDescriptor = GetExpressionDescriptor<IQueryable<CourseModel>, IQueryable<int>>
+            (
+                bodyParameter,
+                parameterName
+            );
+            var expression = GetExpression<IQueryable<CourseModel>, IQueryable<int>>(selectorLambdaOperatorDescriptor);
+
+            //act
+            IQueryable<int> queryableResult = await serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<CourseModel, Course, IQueryable<int>, IQueryable<int>>(expression);
+            var result = await queryableResult.ToListAsync(CancellationToken.None);
+
+            //assert
+            AssertFilterStringIsCorrect(expression, "$it => $it.GroupBy(a => a.DepartmentID).Select(b => b.Key)");
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Order_Departments_Select_New_Anonymoustype()
+        {
+            //arrange
+            string parameterName = "$it";
+            var bodyParameter = new SelectDescriptor
+            (
+                new OrderByDescriptor
+                (
+                    new ParameterDescriptor(parameterName),
+                    new MemberSelectorDescriptor("DepartmentID", new ParameterDescriptor("a")),
+                    ListSortDirection.Descending,
+                    "a"
+                ),
+                new MemberInitDescriptor
+                (
+                    new Dictionary<string, DescriptorBase>
+                    {
+                        ["ID"] = new MemberSelectorDescriptor("DepartmentID", new ParameterDescriptor("a")),
+                        ["DepartmentName"] = new MemberSelectorDescriptor("Name", new ParameterDescriptor("a")),
+                        ["Courses"] = new MemberSelectorDescriptor("Courses", new ParameterDescriptor("a"))
+                    }
+                ),
+                "a"
+            );
+
+            var selectorLambdaOperatorDescriptor = GetExpressionDescriptor<IQueryable<DepartmentModel>, IQueryable<dynamic>>
+            (
+                bodyParameter,
+                parameterName
+            );
+            var expression = GetExpression<IQueryable<DepartmentModel>, IQueryable<dynamic>>(selectorLambdaOperatorDescriptor);
+
+            //act
+            IQueryable<dynamic> queryableResult = await serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<DepartmentModel, Department, IQueryable<dynamic>, IQueryable<dynamic>>(expression);
+            var result = await queryableResult.ToListAsync(CancellationToken.None);
+
+            //assert
+            AssertFilterStringIsCorrect(expression, "$it => Convert($it.OrderByDescending(a => a.DepartmentID).Select(a => new AnonymousType() {ID = a.DepartmentID, DepartmentName = a.Name, Courses = a.Courses}))");
+            Assert.Equal(4, result.First().ID);
+        }
+
+        [Fact]
+        public async Task SelectInstructorFullNames()
+        {
+            //arrange
+            string parameterName = "q";
+            var bodyParameter = new SelectDescriptor
+            (
+                new OrderByDescriptor
+                (
+                    new ParameterDescriptor(parameterName),
+                    new MemberSelectorDescriptor
+                    (
+                        "FullName",
+                        new ParameterDescriptor("s")
+                    ),
+                    ListSortDirection.Ascending,
+                    "s"
+                ),
+                new MemberSelectorDescriptor("FullName", new ParameterDescriptor("a")),
+                "a"
+            );
+
+            var selectorLambdaOperatorDescriptor = GetExpressionDescriptor<IQueryable<InstructorModel>, IQueryable<string>>
+            (
+                bodyParameter,
+                parameterName
+            );
+            var expression = GetExpression<IQueryable<InstructorModel>, IQueryable<string>>(selectorLambdaOperatorDescriptor);
+
+            //act
+            IQueryable<string> queryableResult = await serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<InstructorModel, Instructor, IQueryable<string>, IQueryable<string>>(expression);
+            var result = await queryableResult.ToListAsync(CancellationToken.None);
+
+            //assert
+            AssertFilterStringIsCorrect(expression, "q => q.OrderBy(s => s.FullName).Select(a => a.FullName)");
+            Assert.Equal("Candace Kapoor", result.First());
+        }
+
+        [Fact]
+        public async Task Order_Instructors_Select_New_Anonymoustype_FullNameOnly()
+        {
+            //arrange
+            string parameterName = "q";
+            var bodyParameter = new SelectDescriptor
+            (
+                new OrderByDescriptor
+                (
+                    new ParameterDescriptor(parameterName),
+                    new MemberSelectorDescriptor
+                    (
+                        "FullName",
+                        new ParameterDescriptor("s")
+                    ),
+                    ListSortDirection.Ascending,
+                    "s"
+                ),
+                new MemberInitDescriptor
+                (
+                    new Dictionary<string, DescriptorBase>
+                    {
+                        ["FullName"] = new MemberSelectorDescriptor("FullName", new ParameterDescriptor("a"))
+                    }
+                ),
+                "a"
+            );
+
+            var selectorLambdaOperatorDescriptor = GetExpressionDescriptor<IQueryable<InstructorModel>, IQueryable<dynamic>>
+            (
+                bodyParameter,
+                parameterName
+            );
+            var expression = GetExpression<IQueryable<InstructorModel>, IQueryable<dynamic>>(selectorLambdaOperatorDescriptor);
+
+            //act
+            IQueryable<dynamic> queryableResult = await serviceProvider.GetRequiredService<ISchoolRepository>().QueryAsync<InstructorModel, Instructor, IQueryable<dynamic>, IQueryable<dynamic>>(expression);
+            var result = await queryableResult.ToListAsync(CancellationToken.None);
+
+            //assert
+            AssertFilterStringIsCorrect(expression, "q => Convert(q.OrderBy(s => s.FullName).Select(a => new AnonymousType() {FullName = a.FullName}))");
+            Assert.Equal("Candace Kapoor", result.First().FullName);
         }
 
         #region Fields
