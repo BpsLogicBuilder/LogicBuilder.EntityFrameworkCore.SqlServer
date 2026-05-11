@@ -58,10 +58,10 @@ namespace LogicBuilder.EntityFrameworkCore.SqlServer.Repositories
             //Call the store
             TDataReturn result = await store.QueryAsync(mappedQueryFunc.Compile());
 
-            if (typeof(TModelReturn).IsIQueryable() && typeof(TDataReturn).IsIQueryable())
-                return GetProjection(typeof(TModelReturn).GetUnderlyingElementType());
-            else if (typeof(TModelReturn) == typeof(TDataReturn))
+            if (typeof(TModelReturn) == typeof(TDataReturn))
                 return (TModelReturn)(object)result!;
+            else if (typeof(TModelReturn).IsIQueryable() && typeof(TDataReturn).IsIQueryable())
+                return GetProjection(typeof(TModelReturn).GetUnderlyingElementType());
 
             return mapper.Map<TDataReturn, TModelReturn>(result);
 
