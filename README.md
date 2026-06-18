@@ -1,5 +1,7 @@
 # LogicBuilder.EntityFrameworkCore.SqlServer
 
+LogicBuilder.EntityFrameworkCore.SqlServer is archived and no longer being maintained. The recommended alternative [LogicBuilder.EntityFrameworkCore](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore), supports more EF providers including SQL Server. 
+
 [![CI](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/ci.yml/badge.svg)](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/actions/workflows/github-code-scanning/codeql)
 [![codecov](https://codecov.io/gh/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer/graph/badge.svg?token=7Y55F6XE9W)](https://codecov.io/gh/BpsLogicBuilder/LogicBuilder.EntityFrameworkCore.SqlServer)
