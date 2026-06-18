@@ -1,3 +1,4 @@
+* 2025-06-18 - AB#166: Updating the ReadMe before Archiving.
 * 2025-05-11 - AB#132: Referencing LogicBuilder.Structures 8.0.1 for release.
 * 2025-05-10 - AB#134: Prevent projection to the same type.
 * 2025-04-01 - AB#99:  Added missing test coverage for GenericRepository.GetAsync.
